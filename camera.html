@@ -4,34 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ForageSafe - Scan</title>
-    <link href="/style.css" rel="stylesheet" />
+    <link href="styles/style.css" rel="stylesheet" />
   </head>
-  <body>
-    <!-- full screen camera canvas -->
-    <canvas id="camCanvas"></canvas>
+  <body class="camera-page">
+  <!-- decorative bokeh background -->
+  <div class="bokeh-bg">
+    <div class="bokeh bokeh-1"></div>
+    <div class="bokeh bokeh-2"></div>
+    <div class="bokeh bokeh-3"></div>
+    <div class="bokeh bokeh-4"></div>
+  </div>
 
-    <!-- UI overlay on top of camera -->
-    <div id="overlay">
-      <!-- top bar -->
-      <div id="top-bar">
-        <a href="/" id="back-btn">← Back</a>
-        <h1>Scan Plant</h1>
-      </div>
+  <!-- full screen camera canvas -->
+  <canvas id="camCanvas"></canvas>
 
-      <!-- organ selector -->
-      <div id="organ-selector">
-        <button class="organ-btn active" data-organ="leaf">🌿 Leaf</button>
-        <button class="organ-btn" data-organ="flower">🌸 Flower</button>
-        <button class="organ-btn" data-organ="fruit">🍎 Fruit</button>
-        <button class="organ-btn" data-organ="bark">🌳 Bark</button>
-      </div>
-
-      <!-- bottom controls -->
-      <div id="bottom-bar">
-        <p id="hint">Point camera at the plant part</p>
-        <button id="captureBtn">Capture</button>
-      </div>
+  <!-- UI overlay on top of camera -->
+  <div id="overlay">
+    <!-- top bar -->
+    <div id="top-bar">
+      <a href="/" id="back-btn">←</a>
+      <h1>Scan Plant</h1>
     </div>
+
+    
+
+    <!-- floating shutter button -->
+    <button id="shutterBtn" class="shutter-btn"></button>
+
+    <!-- hint text -->
+    <p id="hint">Point camera at the plant</p>
+  </div>
 
     <!-- loading overlay — hidden until capture -->
     <div id="loading-overlay" style="display: none">
@@ -40,7 +42,7 @@
     </div>
 
     <script src="src/identify.js"></script>
-    <script src="/camera.js"></script>
+    <script src="src/camera.js"></script>
     
   </body>
 </html>
