@@ -22,43 +22,68 @@ app.get("/api/test", (req, res) => {
 
 app.post("/api/identify", upload.single("image"), async (req, res) => {
   try {
+    console.log("--- Step 1: Check file ---");
     if (!req.file) {
+      console.log("No file in request");
       return res.status(400).json({ error: "No image provided" });
     }
+    console.log("File received:", req.file.originalname, req.file.mimetype, req.file.size);
 
+    console.log("--- Step 2: Setup ---");
     const organ = req.body.organ || "leaf";
     const apiKey = process.env.PLANTNET_API_KEY;
+    console.log("API Key present:", !!apiKey, "Key:", apiKey);
+    console.log("Organ:", organ);
 
+    console.log("--- Step 3: Create FormData ---");
     const form = new FormData();
     form.append("organs", organ);
     form.append("images", req.file.buffer, {
       filename: "plant.jpg",
       contentType: req.file.mimetype,
     });
+    console.log("FormData created, buffer size:", req.file.buffer.length);
 
-    const response = await fetch(
-      `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
-      {
-        method: "POST",
-        body: form,
-      },
-    );
+    console.log("--- Step 4: Call PlantNet ---");
+    const url = `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`;
+    console.log("URL:", url.substring(0, 60) + "...");
+    
+    const response = await fetch(url, {
+      method: "POST",
+      body: form,
+    });
+
+    console.log("PlantNet response status:", response.status);
+    console.log("PlantNet response headers:", [...response.headers.entries()]);
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.log("PlantNet error response:", errorText);
       return res.status(response.status).json({ error: "PlantNet API error" });
     }
 
+    console.log("--- Step 5: Parse response ---");
     const data = await response.json();
+    console.log("Response keys:", Object.keys(data));
+    console.log("Results count:", data.results?.length);
+
+    if (!data.results || data.results.length === 0) {
+      console.log("No results returned");
+      return res.status(404).json({ error: "No results found" });
+    }
+
     const top = data.results[0];
+    console.log("Top result:", JSON.stringify(top).substring(0, 200));
 
     res.json({
-      scientificName: top.species.scientificNameWithoutAuthor,
-      commonName: top.species.commonNames[0] || "Unknown",
+      scientificName: top.species?.scientificNameWithoutAuthor || "Unknown",
+      commonName: top.species?.commonNames?.[0] || "Unknown",
       score: Math.round(top.score * 100),
       remainingCalls: data.remainingIdentificationRequests,
     });
   } catch (err) {
     console.error("Identify error:", err);
+    console.error("Stack:", err.stack);
     res.status(500).json({ error: "Server error" });
   }
 });
