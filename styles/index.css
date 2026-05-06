@@ -60,3 +60,16 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 .row { display: flex; gap: 14px; }
 .row .card { flex: 1; }
+
+.footer {
+  position: absolute;
+  bottom: 1rem;
+}
+
+.footer a {
+  color: inherit;
+}
+
+#permapeople:hover, #plantnet:hover {
+  color:chartreuse;
+}
