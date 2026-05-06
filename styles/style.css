@@ -1,10 +1,8 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Global resets and variables */
+@import url('global.css');
 
-:root {
-  --olive-dark: #3E5622;
-  --sage: #709255;
-  --sage-light: #95B46A;
-}
+/* Index page styles */
+@import url('index.css');
 
 body {
   font-family: -apple-system, sans-serif;
@@ -306,3 +304,5 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
   }
 }
 }
+/* Camera page styles - loaded last so they override global body styles */
+@import url('camera.css');
