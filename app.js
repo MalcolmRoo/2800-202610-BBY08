@@ -194,7 +194,7 @@ app.use(express.static(path.join(__dirname, "src")));
 
 // 404
 app.use((req, res) => {
-  res.status(404).send("404 Not Found");
+  res.status(404).sendFile(path.join(__dirname, "404.html"));
 });
 
 app.listen(port, () => {
