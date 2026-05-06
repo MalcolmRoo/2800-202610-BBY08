@@ -13,7 +13,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+
+//This makes our root directory public
+//that includes our server and .env file
+//Security risk
+//app.use(express.static(__dirname));
 
 // API routes
 app.get("/api/test", (req, res) => {
@@ -209,6 +213,9 @@ app.get("/search", (req, res) => {
 app.get("/plant", (req, res) => {
   res.sendFile(path.join(__dirname, "plant.html"));
 });
+
+app.use(express.static(path.join(__dirname, "styles")));
+app.use(express.static(path.join(__dirname, "src")));
 
 // 404
 app.use((req, res) => {
