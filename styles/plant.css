@@ -17,9 +17,9 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
-/* Bokeh background */
 .bokeh-bg {
   position: fixed;
   inset: 0;
@@ -70,8 +70,7 @@ body {
 }
 
 @keyframes bokehFloat {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0) scale(1);
   }
   50% {
@@ -79,7 +78,6 @@ body {
   }
 }
 
-/* Top bar */
 #top-bar {
   position: fixed;
   top: 0;
@@ -92,8 +90,8 @@ body {
 }
 
 #back-btn {
-  position: absolute;
-  top: 20px;
+  position: fixed;
+  top: 16px;
   left: 16px;
   width: 40px;
   height: 40px;
@@ -107,57 +105,21 @@ body {
   font-size: 18px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-}
-
-/* Main container */
-#plant-container {
-  position: relative;
-  z-index: 10;
-  padding: 24px 20px 60px;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-#back-btn {
-  position: absolute;
-  top: 20px;
-  left: 16px;
-  width: 40px;
-  height: 40px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-#plant-container {
-  position: relative;
-  z-index: 10;
-  padding: 20px 20px 80px;
-  max-width: 450px;
-  margin: 0 auto;
+  z-index: 100;
 }
 
 #back-btn:hover {
   opacity: 1;
 }
 
-/* Main container */
 #plant-container {
   position: relative;
   z-index: 10;
-  padding: 60px 20px 80px;
+  padding: 0px 20px 80px;
   max-width: 450px;
-  margin: 0 auto;
+  margin: -60px auto 0;
 }
 
-/* Plant identity section */
 #plant-identity {
   text-align: center;
   margin-bottom: 24px;
@@ -196,7 +158,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Safety badge */
 #safety-badge {
   display: inline-block;
   margin-bottom: 20px;
@@ -219,7 +180,6 @@ body {
   background: linear-gradient(135deg, #d9534f, #c9302c);
 }
 
-/* Info sections - matching index cards */
 .info-card {
   background: rgba(20, 35, 20, 0.85);
   backdrop-filter: blur(10px);
@@ -246,7 +206,6 @@ body {
   line-height: 1.5;
 }
 
-/* Plant image container */
 #plant-image-container {
   text-align: center;
   margin: 20px 0;
@@ -282,4 +241,3 @@ body {
 .scan-another-btn svg {
   stroke: rgba(255, 255, 255, 0.85);
 }
-
