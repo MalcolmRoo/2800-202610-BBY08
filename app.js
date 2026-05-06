@@ -3,7 +3,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch").default;
 const FormData = require("form-data");
 
 const app = express();
@@ -19,6 +19,10 @@ app.use(express.json());
 //Security risk
 //app.use(express.static(__dirname));
 
+// Static files (explicit mappings)
+app.use(express.static(path.join(__dirname, "styles")));
+app.use(express.static(path.join(__dirname, "src")));
+
 // API routes
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is running" });
@@ -26,58 +30,67 @@ app.get("/api/test", (req, res) => {
 
 app.post("/api/identify", upload.single("image"), async (req, res) => {
   try {
-    console.log("--- Step 1: Check file ---");
+    // Step 1: Check file
     if (!req.file) {
-      console.log("No file in request");
       return res.status(400).json({ error: "No image provided" });
     }
-    console.log("File received:", req.file.originalname, req.file.mimetype, req.file.size);
 
-    console.log("--- Step 2: Setup ---");
+    // Step 2: Setup
     const organ = req.body.organ || "leaf";
     const apiKey = process.env.PLANTNET_API_KEY;
-    console.log("API Key present:", !!apiKey, "Key:", apiKey);
-    console.log("Organ:", organ);
+    
+    console.log("[API] File:", req.file.originalname);
+    console.log("[API] API Key exists:", !!apiKey);
+    console.log("[API] Organ:", organ);
 
-    console.log("--- Step 3: Create FormData ---");
+    // Step 3: Create FormData for PlantNet
     const form = new FormData();
     form.append("organs", organ);
     form.append("images", req.file.buffer, {
       filename: "plant.jpg",
       contentType: req.file.mimetype,
     });
-    console.log("FormData created, buffer size:", req.file.buffer.length);
+    console.log("[API] FormData created");
 
-    console.log("--- Step 4: Call PlantNet ---");
+    // Step 4: Call PlantNet API
     const url = `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`;
-    console.log("URL:", url.substring(0, 60) + "...");
+    console.log("[API] Calling PlantNet...");
     
     const response = await fetch(url, {
       method: "POST",
       body: form,
     });
+    
+    console.log("[API] PlantNet status:", response.status);
 
-    console.log("PlantNet response status:", response.status);
-    console.log("PlantNet response headers:", [...response.headers.entries()]);
-
+    // Check HTTP status FIRST - before reading body
     if (!response.ok) {
       const errorText = await response.text();
-      console.log("PlantNet error response:", errorText);
+      console.log("[API] PlantNet HTTP error:", errorText);
+      
+      // Handle 404 specifically
+      if (response.status === 404 || errorText.includes("Species not found")) {
+        return res.status(404).json({ error: "Could not identify plant. Try with a clearer photo." });
+      }
+      
       return res.status(response.status).json({ error: "PlantNet API error" });
     }
 
-    console.log("--- Step 5: Parse response ---");
+    // Step 5: Parse response (only called once, body is OK)
     const data = await response.json();
-    console.log("Response keys:", Object.keys(data));
-    console.log("Results count:", data.results?.length);
+    console.log("[API] Response received, results:", data.results?.length);
+
+    // Check for "Species not found" in the JSON response
+    if (data.error && data.error.includes("Species not found")) {
+      return res.status(404).json({ error: "Could not identify plant. Try with a clearer photo." });
+    }
 
     if (!data.results || data.results.length === 0) {
-      console.log("No results returned");
       return res.status(404).json({ error: "No results found" });
     }
 
     const top = data.results[0];
-    console.log("Top result:", JSON.stringify(top).substring(0, 200));
+    console.log("[API] Top result:", top.species?.scientificNameWithoutAuthor);
 
     res.json({
       scientificName: top.species?.scientificNameWithoutAuthor || "Unknown",
@@ -86,9 +99,9 @@ app.post("/api/identify", upload.single("image"), async (req, res) => {
       remainingCalls: data.remainingIdentificationRequests,
     });
   } catch (err) {
-    console.error("Identify error:", err);
-    console.error("Stack:", err.stack);
-    res.status(500).json({ error: "Server error" });
+    console.error("[API] ERROR:", err.message);
+    console.error("[API] Stack:", err.stack);
+    res.status(500).json({ error: "Server error: " + err.message });
   }
 });
 
