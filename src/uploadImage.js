@@ -25,7 +25,7 @@ async function sendToPlantNet(imageBlob) {
 
     // Show the dark overlay
     if (loader) {
-        loader.style.display = "flex";
+        loader.classList.add("visible");
     }
 
 
@@ -58,7 +58,8 @@ async function sendToPlantNet(imageBlob) {
     } finally {
         // Hide the overlay when done (success or failure)
         if (loader) {
-            loader.style.display = "none";
+            // Remove the .visible class to hide it
+            loader.classList.remove("visible");
         }
     }
 }

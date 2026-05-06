@@ -305,3 +305,6 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 }
 /* Camera page styles - loaded last so they override global body styles */
 @import url('camera.css');
+
+/* Plant result page styles */
+@import url('plant.css');
