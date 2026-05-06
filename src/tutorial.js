@@ -47,7 +47,10 @@ nextButton.addEventListener("click", (event) => {
         textElement.textContent = "You can click on this button to search by name; great for if you wanna know more about a plant you already know of!";
     } else if (stage === 5){
         tutorial.style.transform = "translate(0px, -100px)";
-        textElement.textContent = "Please selection the option you feel best suits your needs!"
-        nextButton.style.display = "none";
+        textElement.textContent = "When Foraging always make sure you are taking a plant in small enough quantities to not harm the local ecosystem. When eating anything you forage it is a good idea to double check your find with multiple sources, use our identification as one of your sources and make sure to always double check the information you recieve. We do not take responsibility for what any user of our app does with the information provided, please forage responsibly.";
+        nextButton.textContent = "I Agree";
+    } else if (stage === 6) {
+        textElement.textContent = "Please select how you would like to identify the plant from one of the buttons below!"
+        nextButton.style.display = "none";   
     }
 });
