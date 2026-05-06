@@ -229,6 +229,7 @@ app.get("/plant", (req, res) => {
 
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.static(path.join(__dirname, "src")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // 404
 app.use((req, res) => {
