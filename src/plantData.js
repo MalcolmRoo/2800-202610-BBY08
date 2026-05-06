@@ -1,30 +1,29 @@
-// read URL params from PlantNet redirect
+// Read URL params from PlantNet redirect
 const params = new URLSearchParams(window.location.search);
 const commonName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
 
-// fill in what we already have from PlantNet
+// Fill in plant info from PlantNet
 document.getElementById("common-name").textContent = commonName;
 document.getElementById("latin-name").textContent = latinName;
-document.getElementById("confidence").textContent = `${score}% confidence`;
+document.getElementById("confidence").textContent = score + "% confident";
 
-// this is , placeholder until plant data API is wired up....
+// Display plant data
 function displayPlant(plantData) {
-  const edibleClass = plantData.isEdible ? "edible" : "not-edible";
-  const edibleText = plantData.isEdible ? "Edible" : "Not Edible";
+  // Update edibility section - just text description
+  const edibilityInfo = document.getElementById("edibility-info");
+  edibilityInfo.textContent = plantData.description || "No edibility information available.";
 
-  document.getElementById("edibility-info").innerHTML = `
-        <span class="${edibleClass}">${edibleText}</span>
-        <p>${plantData.description || "No description available"}</p>
-    `;
+  // Update how to use
+  document.getElementById("how-to-info").textContent = 
+    plantData.servingSuggestion || "Wash thoroughly before use.";
 
-  document.getElementById("how-to-info").textContent =
-    plantData.servingSuggestion || "No preparation info available";
+  // Update hazards
+  document.getElementById("hazard-info").textContent = 
+    plantData.hazards || "No known hazards.";
 
-  document.getElementById("hazard-info").textContent =
-    plantData.hazards || "No hazard info available";
-
+  // Update plant image if available
   if (plantData.image) {
     const img = document.getElementById("plant-image");
     img.src = plantData.image;
@@ -32,13 +31,14 @@ function displayPlant(plantData) {
   }
 }
 
-// just some mock data .
+// Mock plant data (placeholder until real API is connected)
 const mockData = {
   isEdible: true,
   description: "Common edible plant found in urban areas.",
-  servingSuggestion: "Wash thoroughly before eating.",
-  hazards: "None known.",
+  servingSuggestion: "Wash thoroughly before eating. Best raw in salads or cooked.",
+  hazards: "None known. May cause mild upset if eaten in large quantities.",
   image: null,
 };
 
+// Display the plant data
 displayPlant(mockData);

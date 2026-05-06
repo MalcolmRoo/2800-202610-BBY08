@@ -6,3 +6,6 @@
 
 /* Camera page styles - loaded last so they override global body styles */
 @import url('camera.css');
+
+/* Plant result page styles */
+@import url('plant.css');
