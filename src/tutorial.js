@@ -37,7 +37,7 @@ nextButton.addEventListener("click", (event) => {
         tutorial.style.transform = "translate(410px, -173px)";
         textElement.textContent = "You can click on this little gear to change the settings!"
     } else if (stage === 2){
-        tutorial.style.transform = "translate(-374px, 247px)";
+        tutorial.style.transform = "translate(-374px, 90%)";
         textElement.textContent = "You can click on this button to use your device's camera to take a picture of the plant in question; great for if you have the plant in front of you!";
     }  else if (stage === 3){
         tutorial.style.transform = "translate(-374px, 350px)";

@@ -109,6 +109,11 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
   text-decoration: none; font-size: 28px; color: var(--olive-dark); opacity: 0.7;
 }
 
+#startTutorial{
+  background: none;
+  border: none;
+}
+
 #Tutorial{
   background-color: #fff;
   display: none;
