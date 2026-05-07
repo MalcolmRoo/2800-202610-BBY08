@@ -22,6 +22,7 @@ app.use(express.json());
 // Static files (explicit mappings)
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.static(path.join(__dirname, "src")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // API routes
 app.get("/api/test", (req, res) => {
