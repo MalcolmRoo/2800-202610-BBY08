@@ -1,4 +1,5 @@
 
+
 const searchForm = document.querySelector('#search-form'); // Form Id here
 const searchInput = document.querySelector('#search-input'); // Input Id here
 
@@ -55,12 +56,20 @@ function displayResults(results) {
         s.textContent = plant.scientific_name
         plantElement.appendChild(s);
 
-        plantElement.addEventListener("click", () => {
-             //call fetch(`/api/permapeople/plants/${plant.id}`) on the plant details page to get the full plant data
-             console.log("Clicked plant ID:", plant.id);
+        plantElement.addEventListener("click", async () => {
+             // When a plant is clicked, navigate to the plant details page with query parameters
+             const queryParams = new URLSearchParams({
+                id: plant.id,
+                name: plant.name,
+                latin: plant.scientific_name || "",
+                score: "100", // Since this is a search result, we can assume 100% confidence for the sake of display
         });
+    
+            window.location.href = `/plant?${queryParams.toString()}`;
+                });
 
 
         resultsContainer.appendChild(plantElement);
     }
 }
+
