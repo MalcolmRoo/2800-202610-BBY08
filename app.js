@@ -109,12 +109,15 @@ app.post("/api/permapeople/search", async (req, res) => {
     const response = await fetch("https://permapeople.org/api/search", {
       method: "POST",
       headers: {
+        "x-permapeople-key-id": process.env.PERMA_KEY_ID,
+        "x-permapeople-key-secret": process.env.PERMA_KEY_SECRET,
         "Content-Type": "application/json",
         "x-permapeople-key-id": process.env.PERMA_KEY_ID, // auth key
         "x-permapeople-key-secret": process.env.PERMA_KEY_SECRET, // auth secret
       },
       body: JSON.stringify({ q }),
     });
+    
 
     if (!response.ok) {
       const raw = await response.text();
