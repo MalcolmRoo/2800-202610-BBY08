@@ -20,13 +20,13 @@ async function identifyAndFetchDetails(imageData) {
   });
 
   const searchData = await searchRes.json();
-  const first = searchData.plants?.[0];
+  const first = searchData.plants?.[0]; //if things on the left of ? exist, access the thing on the right, otherwise return undefined
 
   let permaData = {};
 
   // 3. If a plant was found, fetch full details
   if (first) {
-    const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
+    const plantRes = await fetch(`/api/permapeople/plants/${first.id}`); //{ method: "GET" } can be omitted since its the default of fetch
     permaData = await plantRes.json();
   }
 
@@ -34,7 +34,10 @@ async function identifyAndFetchDetails(imageData) {
   const plant = parsePerma(permaData);
 
   // 5. Display in UI
-  displayPlant(plant);
+  //displayPlant(plant);
+
+  //
+  return plant;
 }
 
 // async function identifyAndFetchDetails(imageData) {
@@ -85,17 +88,57 @@ async function identifyAndFetchDetails(imageData) {
 //   };
 // }
 
-function parsePerma(data) {
-  return {
-    commonName: data.common_name || "Unknown",
-    scientificName: data.scientific_name || "Unknown",
-    family: data.family || "Unknown",
-    image: data.image || "",
-    edible: data.edible || false,
-    edibleParts: data.edible_parts || [],
-    uses: data.uses || [],
-    toxicity: data.toxicity || "unknown",
+// function parsePerma(data) {
+//   return {
+//     commonName: data.common_name || "Unknown",
+//     scientificName: data.scientific_name || "Unknown",
+//     family: data.family || "Unknown",
+//     image: data.image || "",
+//     edible: data.edible || false,
+//     edibleParts: data.edible_parts || [],
+//     uses: data.uses || [],
+//     toxicity: data.toxicity || "unknown",
+//   };
+// }
+function parsePerma(perma) {
+  const plant = {
+    commonName: perma.name || "Unknown",
+    scientificName: perma.scientific_name || "Unknown",
+    family: "Unknown",
+    edible: false,
+    edibleParts: [],
+    toxicity: "unknown",
+    uses: [],
+    image: perma.images?.thumb || "",
   };
+
+  if (Array.isArray(perma.data)) {
+    for (const item of perma.data) {
+      const key = item.key.toLowerCase();
+
+      if (key === "family") {
+        plant.family = item.value;
+      }
+
+      if (key === "edible") {
+        plant.edible = item.value === "true";
+      }
+
+      if (key === "edible parts") {
+        plant.edibleParts = item.value.split(",").map((s) => s.trim());
+      }
+
+      if (key === "edible uses") {
+        plant.uses.push(item.value);
+      }
+
+      if (key === "toxicity") {
+        plant.toxicity = item.value;
+      }
+    }
+  }
+
+  return plant;
 }
 
 function isEdible(plant) {
