@@ -26,36 +26,13 @@
           </svg>
         </a>
 
-        <!-- Plant icon circle — changes color based on edibility -->
+        <!-- Plant icon circle — SVG fallback shown by default -->
         <div id="plant-icon">
           <svg width="52" height="52" viewBox="0 0 90 90" fill="none">
-            <path
-              d="M45 72 L45 46"
-              stroke="#95B46A"
-              stroke-width="3"
-              stroke-linecap="round"
-            />
-            <path
-              d="M45 58 C43 53 38 46 31 43 C24 40 17 41 16 45 C15 50 20 57 28 59 C36 61 44 59 45 58 Z"
-              stroke="#95B46A"
-              stroke-width="2.8"
-              fill="none"
-              stroke-linecap="round"
-            />
-            <path
-              d="M45 50 C47 44 54 36 62 33 C70 30 77 32 78 36 C79 41 74 49 66 51 C58 54 46 51 45 50 Z"
-              stroke="#95B46A"
-              stroke-width="2.8"
-              fill="none"
-              stroke-linecap="round"
-            />
-            <path
-              d="M14 76 C19 68 30 65 38 67 C41 68 43 69 45 69 C47 69 49 68 52 67 C60 65 71 68 76 76"
-              stroke="#95B46A"
-              stroke-width="2.8"
-              stroke-linecap="round"
-              fill="none"
-            />
+            <path d="M45 72 L45 46" stroke="#95B46A" stroke-width="3" stroke-linecap="round"/>
+            <path d="M45 58 C43 53 38 46 31 43 C24 40 17 41 16 45 C15 50 20 57 28 59 C36 61 44 59 45 58 Z" stroke="#95B46A" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+            <path d="M45 50 C47 44 54 36 62 33 C70 30 77 32 78 36 C79 41 74 49 66 51 C58 54 46 51 45 50 Z" stroke="#95B46A" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+            <path d="M14 76 C19 68 30 65 38 67 C41 68 43 69 45 69 C47 69 49 68 52 67 C60 65 71 68 76 76" stroke="#95B46A" stroke-width="2.8" stroke-linecap="round" fill="none"/>
           </svg>
         </div>
 
@@ -85,36 +62,17 @@
       <!-- Plant container — image and dynamic sections injected by plantData.js -->
       <div id="content-area">
         <div id="plant-image-container">
-          <img
-            id="plant-image"
-            src=""
-            alt="Plant image"
-            style="display: none"
-          />
+          <img id="plant-image" src="" alt="Plant image" style="display: none" />
         </div>
 
         <!-- All sections injected dynamically -->
         <div id="plant-details"></div>
 
         <!-- Scan another plant button -->
-        <button
-          class="scan-another-btn"
-          onclick="window.location.href = '/camera'"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
-            />
-            <circle cx="12" cy="13" r="4" />
+        <button class="scan-another-btn" onclick="window.location.href = '/camera'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
           </svg>
           <span>Scan Another Plant</span>
         </button>

@@ -19,9 +19,21 @@ function getField(dataArray, key) {
 // Skips section entirely if no content provided
 function addSection(title, content, isHazard = false) {
   if (!content) return;
+  
+  let icon = '';
+  if (title === 'Edibility') {
+    icon = '<div class="card-icon-badge"><img src="/fork-and-knife.png" width="18" height="18" alt="edibility icon" /></div>';
+  } else if (title === 'How to Use') {
+    icon = '<div class="card-icon-badge"><img src="/mortar.png" width="18" height="18" alt="preparation icon" /></div>';
+  } else if (title === 'Known Hazards') {
+    icon = '<div class="card-icon-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>';
+  } else if (title === 'Plant Info') {
+    icon = '<div class="card-icon-badge"><img src="/information-button.png" width="18" height="18" alt="plant info icon" /></div>';
+  }
+  
   const section = document.createElement("div");
   section.className = isHazard ? "info-card hazard" : "info-card";
-  section.innerHTML = `<h2>${title}</h2>${content}`;
+  section.innerHTML = `${icon}<h2>${title}</h2>${content}`;
   document.getElementById("plant-details").appendChild(section);
 }
 
@@ -57,7 +69,7 @@ function displayPlant(data) {
   const details = document.getElementById("plant-details");
   details.innerHTML = "";
 
-  // Plant image from Permapeople CDN
+  // Plant image from Permapeople CDN — larger image below
   if (data.images?.title) {
     const img = document.getElementById("plant-image");
     img.src = data.images.title;
