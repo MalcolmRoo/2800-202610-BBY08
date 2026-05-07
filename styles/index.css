@@ -61,7 +61,7 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 .row { display: flex; gap: 14px; }
 .row .card { flex: 1; }
 #Mascot {
-  position: absolute; z-index: 20; top: 85%; right: 20px;
+  position: absolute; z-index: 20; top: 80%; right: 20px;
   text-decoration: none; font-size: 28px; color: var(--olive-dark); opacity: 0.7;
 }
 

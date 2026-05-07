@@ -3,6 +3,8 @@ var nextButton = document.createElement("button");
 var tutorial = document.getElementById("Tutorial");
 var infoContainer = document.getElementById("textContainer");
 var textElement = document.createElement("p");
+var mascot = document.getElementById("Mascot");
+var mascotImg = document.getElementById("mascotImg");
 
 let stage = 0;
 
@@ -28,7 +30,7 @@ tutorialButton.addEventListener("click", (event) => {
 
     infoContainer.appendChild(nextButton);
 
-    tutorialButton.style.display = "none";
+    mascot.style.display = "none";
 });
 
 nextButton.addEventListener("click", (event) => {
@@ -44,9 +46,11 @@ nextButton.addEventListener("click", (event) => {
         textElement.textContent = "You can click on this button to upload a picture you've already taken; great for if you want to identify a plant you've seen before!";
     }  else if (stage === 4){
         tutorial.style.transform = "translate(374px, 350px)";
+        mascotImg.style.transform = "translateX(305px)";
         textElement.textContent = "You can click on this button to search by name; great for if you wanna know more about a plant you already know of!";
     } else if (stage === 5){
         tutorial.style.transform = "translate(0px, -100px)";
+        mascotImg.style.transform = "translateX(-65px)";
         textElement.textContent = "When Foraging always make sure you are taking a plant in small enough quantities to not harm the local ecosystem. When eating anything you forage it is a good idea to double check your find with multiple sources, use our identification as one of your sources and make sure to always double check the information you recieve. We do not take responsibility for what any user of our app does with the information provided, please forage responsibly.";
         nextButton.textContent = "I Agree";
     } else if (stage === 6) {
