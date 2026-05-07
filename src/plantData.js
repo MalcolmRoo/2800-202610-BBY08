@@ -77,10 +77,14 @@ function displayPlant(data) {
   }
 
   // Edibility
-  const isEdible = getField(d, "Edible") === "true";
+  const edibleRaw = getField(d, "Edible");
+  const isEdible =
+    edibleRaw?.toLowerCase() === "true" ||
+    edibleRaw === "1" ||
+    edibleRaw?.toLowerCase() === "yes";
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
-
+  console.log("Edible raw value:", edibleRaw);
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
