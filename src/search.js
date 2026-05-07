@@ -2,9 +2,42 @@
 const searchForm = document.querySelector('#search-form'); // Form Id here
 const searchInput = document.querySelector('#search-input'); // Input Id here
 
+
+window.addEventListener('DOMContentLoaded', (e) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('search');
+
+    if(query){
+        performSearch(query);
+    }
+});
+
+async function performSearch(query) {
+    const loader = document.getElementById("loading-overlay");
+    console.log("load search");
+    if (loader) loader.classList.add("visible");
+
+    try {
+        const response = await fetch("/api/permapeople/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ q: query }),
+        });
+        
+        const results = await response.json();
+        if (!response.ok) throw new Error(results.error);
+
+        displayResults(results);
+    } catch (err) {
+        console.error("Search failed:", err);
+    } finally {
+        if (loader) loader.classList.remove("visible");
+    }
+}
+
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+    console.log("form search");
     const query = searchInput.value.trim();
     if (!query) return;
 
@@ -41,7 +74,7 @@ searchForm.addEventListener('submit', async (e) => {
 function displayResults(results) {
     const plantArray = results.plants;
     const resultsContainer = document.getElementById("search-results");// Results container Id here
-
+    resultsContainer.innerHTML = "";
     for (const plant of plantArray) {
         // Create a new element for each plant result
         const plantElement = document.createElement("div");
