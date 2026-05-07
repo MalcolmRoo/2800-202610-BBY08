@@ -3,63 +3,89 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GreenScan - Result</title>
+    <title>ForageSafe - Result</title>
     <link href="/style.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- Bokeh background -->
-    <div class="bokeh-bg">
-      <div class="bokeh bokeh-1"></div>
-      <div class="bokeh bokeh-2"></div>
-      <div class="bokeh bokeh-3"></div>
-      <div class="bokeh bokeh-4"></div>
-    </div>
+    <div id="result-page">
+      <!-- Hero Panel -->
+      <div id="hero-panel">
+        <a href="/" id="back-btn" aria-label="Go back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
 
-    <!-- Top bar -->
-    <div id="top-bar">
-      <a href="/camera" id="back-btn">←</a>
-    </div>
+        <div id="plant-icon">
+          <svg width="52" height="52" viewBox="0 0 90 90" fill="none">
+            <path d="M45 72 L45 46" stroke="#95B46A" stroke-width="3" stroke-linecap="round"/>
+            <path d="M45 58 C43 53 38 46 31 43 C24 40 17 41 16 45 C15 50 20 57 28 59 C36 61 44 59 45 58 Z" stroke="#95B46A" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+            <path d="M45 50 C47 44 54 36 62 33 C70 30 77 32 78 36 C79 41 74 49 66 51 C58 54 46 51 45 50 Z" stroke="#95B46A" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+            <path d="M14 76 C19 68 30 65 38 67 C41 68 43 69 45 69 C47 69 49 68 52 67 C60 65 71 68 76 76" stroke="#95B46A" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
 
-    <!-- Main container -->
-    <div id="plant-container">
-      <!-- Plant identity -->
-      <div id="plant-identity">
+        <span class="label">IDENTIFIED PLANT</span>
+
         <h1 id="common-name">Loading...</h1>
         <p id="latin-name"></p>
-        <p id="confidence"></p>
+
+        <div id="stats-bar">
+          <div class="stat">
+            <span class="stat-value" id="confidence">--</span>
+            <span class="stat-label">Confidence</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-value" id="stat-status">--</span>
+            <span class="stat-label">Status</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-value" id="stat-edible">--</span>
+            <span class="stat-label">Edible</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Plant image -->
-      <div id="plant-image-container">
-        <img id="plant-image" src="" alt="Plant image" style="display: none" />
-      </div>
+      <!-- Content Area -->
+      <div id="content-area">
+        <div class="info-card" id="edibility-section">
+          <div class="card-icon-badge">
+            <img src="/fork-and-knife.png" width="18" height="18" alt="edibility icon" />
+          </div>
+          <h2>Edibility</h2>
+          <p id="edibility-info">Loading...</p>
+        </div>
 
-      <!-- Edibility info -->
-      <div class="info-card" id="edibility-section">
-        <h2>Edibility</h2>
-        <p id="edibility-info">Loading...</p>
-      </div>
+        <div class="info-card" id="how-to-section">
+          <div class="card-icon-badge">
+            <img src="/mortar.png" width="18" height="18" alt="preparation icon" />
+          </div>
+          <h2>How to Use</h2>
+          <p id="how-to-info">Loading...</p>
+        </div>
 
-      <!-- How to use -->
-      <div class="info-card" id="how-to-section">
-        <h2>How to Use</h2>
-        <p id="how-to-info">Loading...</p>
-      </div>
+        <div class="info-card hazard" id="hazard-section">
+          <div class="card-icon-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h2>Known Hazards</h2>
+          <p id="hazard-info">Loading...</p>
+        </div>
 
-      <!-- Known Hazards -->
-      <div class="info-card" id="hazard-section">
-        <h2>Known Hazards</h2>
-        <p id="hazard-info">Loading...</p>
+        <button class="scan-another-btn" onclick="window.location.href='/camera'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span>Scan Another Plant</span>
+        </button>
       </div>
-
-      <!-- Scan another plant button -->
-      <button class="scan-another-btn" onclick="window.location.href='/camera'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-          <circle cx="12" cy="13" r="4"/>
-        </svg>
-        <span>Scan Another Plant</span>
-      </button>
     </div>
 
     <script src="/plantData.js"></script>
