@@ -1,3 +1,10 @@
+body{
+    background-image: url(/dendelions.png);
+    background-repeat: no-repeat;
+    background-position-y: bottom;
+    background-position-x: left;
+}
+
 .plant-result {
     padding: 20px;
     display: flex;
@@ -7,4 +14,25 @@
     margin-block:0.5em;
     background: rgba(154, 198, 154, 0.85);
     cursor: pointer;
+}
+
+#search-results{
+    background: #3E5622;
+    padding-left: 38px;
+    margin-top: 10px;
+    border-radius: 20px;
+    padding-right: 38px;
+}
+
+#search-input{
+  border: none;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+#submit-button{
+    padding: 5px;
+    background: darkkhaki;
+    border: none;
+    border-radius: 8px;
 }
