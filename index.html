@@ -128,7 +128,7 @@
         <b>Upload photo</b>
         <small>From your library</small>
       </label>
-      <a href="/search" class="card lime">
+      <button id="showSearch" class="card lime">
         <svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2">
           <circle cx="11" cy="11" r="8" />
@@ -136,10 +136,10 @@
         </svg>
         <b>Plant search</b>
         <small>Browse database</small>
-      </a>
+      </button>
     </div>
     <div class="search-box" id="textSearchContainer">
-      <form action="/search">
+      <form action="/search" method="get">
         <input
           id="textSearch"
           type="text"
@@ -171,6 +171,7 @@
   <script src="/uploadImage.js"></script>
   <script src="/tutorial.js"></script>
   <script src="/identify.js"></script>
+  <script src="/index.js"></script>
 </body>
 
 </html>
