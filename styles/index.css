@@ -24,6 +24,14 @@ body.index-page {
   display: flex; align-items: center; justify-content: center;
   font-size: 60px;
   box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.logo-icon .logo-img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(62%) sepia(20%) saturate(400%) hue-rotate(60deg) brightness(95%) contrast(85%);
 }
 
 h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
