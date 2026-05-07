@@ -36,28 +36,28 @@ tutorialButton.addEventListener("click", (event) => {
 nextButton.addEventListener("click", (event) => {
     stage ++;
     if(stage === 1){
-        if(screen.width < 1275){
+        if(window.innerWidth < 1275){
             tutorial.style.transform = "translate(1rem, -22rem)";
         } else {
             tutorial.style.transform = "translate(26rem, -22rem)";
         }
         textElement.textContent = "You can click on this little gear to change the settings!"
     } else if (stage === 2){
-        if(screen.width < 1275){
+        if(window.innerWidth < 1275){
             tutorial.style.transform = "translate(1rem, -4rem)";
         } else {
             tutorial.style.transform = "translate(-23rem, 4rem)";
         }
         textElement.textContent = "You can click on this button to use your device's camera to take a picture of the plant in question; great for if you have the plant in front of you!";
     }  else if (stage === 3){
-        if(screen.width < 1275){
+        if(window.innerWidth < 1275){
             tutorial.style.transform = "translate(1rem, 21rem)";
         } else {
             tutorial.style.transform = "translate(-23rem, 11rem)";
         }
         textElement.textContent = "You can click on this button to upload a picture you've already taken; great for if you want to identify a plant you've seen before!";
     }  else if (stage === 4){
-        if(screen.width < 1275){
+        if(window.innerWidth < 1275){
             tutorial.style.transform = "translate(-1rem, 21rem)";
         } else {
             tutorial.style.transform = "translate(23rem, 11rem)";
