@@ -7,7 +7,7 @@
 :root {
   --bg-main: #2d4a1a;
   --bg-card: #1e3310;
-  --accent: #95B46A;
+  --accent: #95b46a;
   --accent-border: rgba(149, 180, 106, 0.2);
   --warning: #e6a23c;
   --warning-border: rgba(230, 162, 60, 0.25);
@@ -17,7 +17,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #1e3310;
   min-height: 100vh;
   overflow-x: hidden;
@@ -62,7 +63,9 @@ body {
   transition: all 0.2s ease;
 }
 
-#back-btn:active { transform: scale(0.95); }
+#back-btn:active {
+  transform: scale(0.95);
+}
 
 #plant-icon {
   width: 110px;
@@ -76,7 +79,10 @@ body {
   margin-bottom: 16px;
 }
 
-#plant-icon svg { width: 64px; height: 64px; }
+#plant-icon svg {
+  width: 64px;
+  height: 64px;
+}
 
 .label {
   font-size: 11px;
@@ -170,7 +176,8 @@ body {
 }
 
 .card-icon-badge img {
-  filter: brightness(0) saturate(100%) invert(68%) sepia(32%) saturate(456%) hue-rotate(63deg) brightness(95%) contrast(87%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(32%) saturate(456%)
+    hue-rotate(63deg) brightness(95%) contrast(87%);
 }
 
 .info-card h2 {
@@ -197,7 +204,9 @@ body {
   color: var(--warning);
 }
 
-.info-card.hazard h2 { color: var(--warning); }
+.info-card.hazard h2 {
+  color: var(--warning);
+}
 
 .scan-another-btn {
   width: 100%;
@@ -223,22 +232,125 @@ body {
   transform: translateY(-2px);
 }
 
-.scan-another-btn:active { transform: translateY(0); }
-.scan-another-btn svg { color: var(--accent); }
-
-@media (max-width: 400px) {
-  #plant-icon { width: 76px; height: 76px; }
-  #plant-icon svg { width: 34px; height: 34px; }
-  #common-name { font-size: 26px; }
-  .stat-value { font-size: 14px; }
-  #content-area { padding: 16px 12px 20px; gap: 12px; }
-  .info-card { padding: 16px; border-radius: 16px; }
-  .info-card p { font-size: 12px; }
-  .card-icon-badge { width: 26px; height: 26px; }
+.scan-another-btn:active {
+  transform: translateY(0);
+}
+.scan-another-btn svg {
+  color: var(--accent);
 }
 
-.stat-value.danger { color: #e05252; }
-.stat-value.safe { color: #4a9f4a; }
-#plant-icon.danger { border-color: #e05252; }
-#plant-icon.danger svg path { stroke: #e05252; }
-.label.danger { color: #e05252; }
+@media (max-width: 400px) {
+  #plant-icon {
+    width: 76px;
+    height: 76px;
+  }
+  #plant-icon svg {
+    width: 34px;
+    height: 34px;
+  }
+  #common-name {
+    font-size: 26px;
+  }
+  .stat-value {
+    font-size: 14px;
+  }
+  #content-area {
+    padding: 16px 12px 20px;
+    gap: 12px;
+  }
+  .info-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .info-card p {
+    font-size: 12px;
+  }
+  .card-icon-badge {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.stat-value.danger {
+  color: #e05252;
+}
+.stat-value.safe {
+  color: #4a9f4a;
+}
+#plant-icon.danger {
+  border-color: #e05252;
+}
+#plant-icon.danger svg path {
+  stroke: #e05252;
+}
+.label.danger {
+  color: #e05252;
+}
+
+/* Plant image */
+#plant-image {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  border: 1px solid var(--accent-border);
+}
+
+/* Dynamic sections — match info-card style */
+.info-card {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--accent-border);
+  position: relative;
+  margin-bottom: 0;
+}
+
+.info-card h2 {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 12px;
+}
+
+.info-card p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-top: 6px;
+}
+
+.info-card p strong {
+  color: var(--accent);
+}
+
+/* Edible / not edible text */
+.edible {
+  color: #4a9f4a;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.not-edible {
+  color: #e05252;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Mobile tweaks */
+@media (max-width: 400px) {
+  #plant-container {
+    padding: 16px 12px 20px;
+    gap: 12px;
+  }
+  .info-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .info-card p {
+    font-size: 13px;
+  }
+}
