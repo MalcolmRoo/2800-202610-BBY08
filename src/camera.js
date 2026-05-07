@@ -1,18 +1,9 @@
 let VIDEO = null;
 let CANVAS = null;
 let CONTEXT = null;
-let selectedOrgan = "leaf";
 
 document.addEventListener("DOMContentLoaded", function () {
   const SHUTTER = document.getElementById("shutterBtn");
-
-  document.querySelectorAll(".organ-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelector(".organ-btn.active").classList.remove("active");
-      btn.classList.add("active");
-      selectedOrgan = btn.dataset.organ;
-    });
-  });
 
   SHUTTER.addEventListener("click", (event) => {
     event.preventDefault();
@@ -29,9 +20,7 @@ function accessCamera() {
   CANVAS.height = window.innerHeight;
 
   navigator.mediaDevices
-    .getUserMedia({
-      video: { facingMode: "environment" },
-    })
+    .getUserMedia({ video: { facingMode: "environment" } })
     .then(function (stream) {
       VIDEO = document.createElement("video");
       VIDEO.srcObject = stream;
@@ -52,8 +41,6 @@ function updateCanvas() {
 
 function takePicture() {
   CONTEXT.drawImage(VIDEO, 0, 0, CANVAS.width, CANVAS.height);
-
-  // this convert to blob instead of base64(needed for plantNet api , it just works better for it ig)
   CANVAS.toBlob(
     function (blob) {
       sendToPlantNet(blob);
@@ -69,7 +56,7 @@ async function sendToPlantNet(imageBlob) {
 
   const formData = new FormData();
   formData.append("image", imageBlob, "plant.jpg");
-  formData.append("organ", selectedOrgan);
+  formData.append("organ", "auto");
 
   try {
     const response = await fetch("/api/identify", {
@@ -95,5 +82,3 @@ async function sendToPlantNet(imageBlob) {
     loading.classList.remove("visible");
   }
 }
-
-
