@@ -94,7 +94,7 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
   width: 320px;
   border-radius: 20px;
   position: fixed;
-  transform: translateY(-20rem);
+  transform: translate(1rem, -20rem);
 }
 
 #textSearchContainer {
