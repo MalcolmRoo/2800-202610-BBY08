@@ -83,6 +83,24 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
   transform: translateY(-100px);
 }
 
+#textSearchContainer {
+  align-self: anchor-center;
+  display: none;
+}
+
+#textSearch {
+  border: none;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+#textSubmit {
+  padding: 5px;
+  background: darkkhaki;
+  border: none;
+  border-radius: 8px;
+}
+
 #tutorialContainer{
   width: 100%;
   height: 100vh;
