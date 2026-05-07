@@ -1,60 +1,149 @@
+// Read URL params passed from PlantNet redirect
 const params = new URLSearchParams(window.location.search);
 const commonName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
 
+// Fill in PlantNet data immediately on page load
 document.getElementById("common-name").textContent = commonName;
 document.getElementById("latin-name").textContent = latinName;
 document.getElementById("confidence").textContent = score + "%";
 
-function displayPlant(plantData) {
-  const edibilityInfo = document.getElementById("edibility-info");
-  edibilityInfo.textContent = plantData.description || "No edibility information available.";
+// Helper — finds a value from Permapeople's key-value data array
+function getField(dataArray, key) {
+  const found = dataArray.find((item) => item.key === key);
+  return found ? found.value : null;
+}
 
-  document.getElementById("how-to-info").textContent = 
-    plantData.servingSuggestion || "Wash thoroughly before use.";
+// Helper — creates and appends a styled card section to plant-details div
+// Skips section entirely if no content provided
+function addSection(title, content, isHazard = false) {
+  if (!content) return;
+  const section = document.createElement("div");
+  section.className = isHazard ? "info-card hazard" : "info-card";
+  section.innerHTML = `<h2>${title}</h2>${content}`;
+  document.getElementById("plant-details").appendChild(section);
+}
 
-  document.getElementById("hazard-info").textContent = 
-    plantData.hazards || "No known hazards.";
+// Fetches plant data from Permapeople using scientific name from PlantNet
+async function fetchPermapeople(scientificName) {
+  try {
+    // Step 1 — search Permapeople by scientific name
+    const searchRes = await fetch("/api/permapeople/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: scientificName }),
+    });
 
-  const statusEl = document.getElementById("stat-status");
-  const edibleEl = document.getElementById("stat-edible");
-  const plantIcon = document.getElementById("plant-icon");
-  const label = document.querySelector(".label");
+    const searchData = await searchRes.json();
+    const first = searchData.plants?.[0];
 
-  if (plantData.safe !== undefined) {
-    statusEl.textContent = plantData.safe ? "Safe" : "Toxic";
-    statusEl.className = "stat-value " + (plantData.safe ? "safe" : "danger");
-  }
+    if (!first) return;
 
-  if (plantData.isEdible !== undefined || plantData.edible !== undefined) {
-    const isEdible = plantData.isEdible !== undefined ? plantData.isEdible : plantData.edible;
-    edibleEl.textContent = isEdible ? "Yes" : "No";
-    edibleEl.className = "stat-value " + (isEdible ? "safe" : "danger");
-  }
+    // Step 2 — fetch full plant details using ID from search
+    const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
+    const data = await plantRes.json();
 
-  if (plantData.safe === false) {
-    plantIcon.classList.add("danger");
-    label.classList.add("danger");
-  } else {
-    plantIcon.classList.remove("danger");
-    label.classList.remove("danger");
-  }
-
-  if (plantData.image) {
-    const img = document.getElementById("plant-image");
-    img.src = plantData.image;
-    img.style.display = "block";
+    // Step 3 — display the data
+    displayPlant(data);
+  } catch (err) {
+    console.error("Permapeople error:", err);
   }
 }
 
-const mockData = {
-  isEdible: false,
-  safe: false,
-  description: "Common edible plant found in urban areas.",
-  servingSuggestion: "Wash thoroughly before eating. Best raw in salads or cooked.",
-  hazards: "None known. May cause mild upset if eaten in large quantities.",
-  image: null,
-};
+// Renders all plant data sections dynamically onto the result screen
+function displayPlant(data) {
+  const d = data.data || [];
+  const details = document.getElementById("plant-details");
+  details.innerHTML = "";
 
-displayPlant(mockData);
+  // Plant image from Permapeople CDN
+  if (data.images?.title) {
+    const img = document.getElementById("plant-image");
+    img.src = data.images.title;
+    img.style.display = "block";
+  }
+
+  // Edibility
+  const isEdible = getField(d, "Edible") === "true";
+  const edibleParts = getField(d, "Edible parts");
+  const edibleUses = getField(d, "Edible uses");
+
+  // Update stats bar — no duplicate edibility text in sections
+  const statusEl = document.getElementById("stat-status");
+  const edibleEl = document.getElementById("stat-edible");
+  const plantIcon = document.getElementById("plant-icon");
+  const plantLabel = document.getElementById("plant-label");
+
+  if (isEdible) {
+    statusEl.textContent = "Safe";
+    statusEl.className = "stat-value safe"; // green color
+    edibleEl.textContent = "Yes";
+    edibleEl.className = "stat-value safe"; // green color
+  } else {
+    statusEl.textContent = "Toxic";
+    statusEl.className = "stat-value danger"; // red color
+    edibleEl.textContent = "No";
+    edibleEl.className = "stat-value danger"; // red color
+    plantIcon.classList.add("danger"); // red circle border
+    plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
+  }
+
+  // Edible parts and uses only — badge already shown in stats bar
+  let edibilityContent = "";
+  if (edibleParts)
+    edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
+  if (edibleUses)
+    edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
+  if (!edibleParts && !edibleUses)
+    edibilityContent = `<p>${isEdible ? "This plant is edible." : "This plant is not edible."}</p>`;
+  addSection("Edibility", edibilityContent);
+
+  // How to Use — first 2 paragraphs for edible plants only + utility
+  const utility = getField(d, "Utility");
+  const description = data.description;
+  let howToContent = "";
+  if (isEdible && description) {
+    const paragraphs = description.split("\r\n\r\n").slice(0, 2).join(" ");
+    howToContent += `<p>${paragraphs}</p>`;
+  }
+  if (utility) howToContent += `<p><strong>Known Uses:</strong> ${utility}</p>`;
+  addSection("How to Use", howToContent || null);
+
+  // Known Hazards — warning styling applied
+  const warning = getField(d, "Warning");
+  const toxicity = getField(d, "Toxicity");
+  let hazardContent = "";
+  if (warning) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if (toxicity)
+    hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
+  addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+
+  // Plant Info
+  const infoKeys = [
+    "Life cycle",
+    "Height",
+    "Light requirement",
+    "Water requirement",
+    "Soil type",
+    "Family",
+    "Growth",
+    "Leaves",
+    "Medicinal",
+  ];
+  let infoContent = "";
+  infoKeys.forEach((key) => {
+    const val = getField(d, key);
+    if (val) {
+      const displayVal =
+        key === "Height" ? `${val}m` : key === "Medicinal" ? "Yes" : val;
+      infoContent += `<p><strong>${key}:</strong> ${displayVal}</p>`;
+    }
+  });
+  addSection("Plant Info", infoContent || null);
+}
+
+// Kick off Permapeople fetch using latin name from PlantNet
+if (latinName) {
+  fetchPermapeople(latinName);
+}

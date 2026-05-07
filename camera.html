@@ -7,34 +7,24 @@
     <link href="/style.css" rel="stylesheet" />
   </head>
   <body class="camera-page">
-  <!-- decorative bokeh background -->
-  <div class="bokeh-bg">
-    <div class="bokeh bokeh-1"></div>
-    <div class="bokeh bokeh-2"></div>
-    <div class="bokeh bokeh-3"></div>
-    <div class="bokeh bokeh-4"></div>
-  </div>
-
-  <!-- full screen camera canvas -->
-  <canvas id="camCanvas"></canvas>
-
-  <!-- UI overlay on top of camera -->
-  <div id="overlay">
-    <!-- top bar -->
-    <div id="top-bar">
-      <a href="/" id="back-btn">←</a>
+    <div class="bokeh-bg">
+      <div class="bokeh bokeh-1"></div>
+      <div class="bokeh bokeh-2"></div>
+      <div class="bokeh bokeh-3"></div>
+      <div class="bokeh bokeh-4"></div>
     </div>
 
-    
+    <canvas id="camCanvas"></canvas>
 
-    <!-- floating shutter button -->
-    <button id="shutterBtn" class="shutter-btn"></button>
+    <div id="overlay">
+      <div id="top-bar">
+        <a href="/" id="back-btn">←</a>
+        <h1>Scan Plant</h1>
+      </div>
+      <button id="shutterBtn" class="shutter-btn"></button>
+      <p id="hint">Point camera at the plant</p>
+    </div>
 
-    <!-- hint text -->
-    <p id="hint">Point camera at the plant</p>
-  </div>
-
-    <!-- loading overlay — hidden until capture -->
     <div id="loading-overlay">
       <div class="spinner">
         <div class="stage">
@@ -74,10 +64,11 @@
           </div>
         </div>
       </div>
-      <p class="text" style="color: white; margin-top: 10px;">Identifying plant...</p>
+      <p class="text" style="color: white; margin-top: 10px">
+        Identifying plant...
+      </p>
     </div>
 
-    <script src="/identify.js"></script>
-    <script src="/camera.js"></script>
+    <script src="camera.js"></script>
   </body>
 </html>
