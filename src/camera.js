@@ -4,7 +4,7 @@ let CONTEXT = null;
 let selectedOrgan = "leaf";
 
 document.addEventListener("DOMContentLoaded", function () {
-  const CAPTURE = document.getElementById("captureBtn");
+  const SHUTTER = document.getElementById("shutterBtn");
 
   document.querySelectorAll(".organ-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  CAPTURE.addEventListener("click", (event) => {
+  SHUTTER.addEventListener("click", (event) => {
     event.preventDefault();
     takePicture();
   });
@@ -64,8 +64,8 @@ function takePicture() {
 }
 
 async function sendToPlantNet(imageBlob) {
-  document.getElementById("loading-overlay").style.display = "flex";
-  document.getElementById("captureBtn").style.display = "none";
+  const loading = document.getElementById("loading-overlay");
+  loading.classList.add("visible");
 
   const formData = new FormData();
   formData.append("image", imageBlob, "plant.jpg");
@@ -92,10 +92,7 @@ async function sendToPlantNet(imageBlob) {
     window.location.href = `/plant?${params}`;
   } catch (err) {
     alert("Could not identify plant. Try again.");
-    document.getElementById("loading-overlay").style.display = "none";
-    document.getElementById("captureBtn").style.display = "block";
-    document.getElementById("captureBtn").textContent = "Capture";
-    document.getElementById("captureBtn").disabled = false;
+    loading.classList.remove("visible");
   }
 }
 

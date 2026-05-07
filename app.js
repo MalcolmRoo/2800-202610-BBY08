@@ -3,7 +3,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch").default;
 const FormData = require("form-data");
 
 const app = express();
@@ -14,51 +14,94 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors());
 app.use(express.json());
 
-// API routes FIRST
+//This makes our root directory public
+//that includes our server and .env file
+//Security risk
+//app.use(express.static(__dirname));
+
+// Static files (explicit mappings)
+app.use(express.static(path.join(__dirname, "styles")));
+app.use(express.static(path.join(__dirname, "src")));
+
+// API routes
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is running" });
 });
 
 app.post("/api/identify", upload.single("image"), async (req, res) => {
   try {
+    // Step 1: Check file
     if (!req.file) {
       return res.status(400).json({ error: "No image provided" });
     }
 
+    // Step 2: Setup
     const organ = req.body.organ || "leaf";
     const apiKey = process.env.PLANTNET_API_KEY;
+    
+    console.log("[API] File:", req.file.originalname);
+    console.log("[API] API Key exists:", !!apiKey);
+    console.log("[API] Organ:", organ);
 
+    // Step 3: Create FormData for PlantNet
     const form = new FormData();
     form.append("organs", organ);
     form.append("images", req.file.buffer, {
       filename: "plant.jpg",
       contentType: req.file.mimetype,
     });
+    console.log("[API] FormData created");
 
-    const response = await fetch(
-      `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
-      {
-        method: "POST",
-        body: form,
-      },
-    );
+    // Step 4: Call PlantNet API
+    const url = `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`;
+    console.log("[API] Calling PlantNet...");
+    
+    const response = await fetch(url, {
+      method: "POST",
+      body: form,
+    });
+    
+    console.log("[API] PlantNet status:", response.status);
 
+    // Check HTTP status FIRST - before reading body
     if (!response.ok) {
+      const errorText = await response.text();
+      console.log("[API] PlantNet HTTP error:", errorText);
+      
+      // Handle 404 specifically
+      if (response.status === 404 || errorText.includes("Species not found")) {
+        return res.status(404).json({ error: "Could not identify plant. Try with a clearer photo." });
+      }
+      
       return res.status(response.status).json({ error: "PlantNet API error" });
     }
 
+    // Step 5: Parse response (only called once, body is OK)
     const data = await response.json();
+    console.log("[API] Response received, results:", data.results?.length);
+
+    // Check for "Species not found" in the JSON response
+    if (data.error && data.error.includes("Species not found")) {
+      return res.status(404).json({ error: "Could not identify plant. Try with a clearer photo." });
+    }
+
+    if (!data.results || data.results.length === 0) {
+      return res.status(404).json({ error: "No results found" });
+    }
+
     const top = data.results[0];
+    console.log("[API] Top result:", top.species?.scientificNameWithoutAuthor);
 
     res.json({
-      scientificName: top.species.scientificNameWithoutAuthor,
-      commonName: top.species.commonNames[0] || "Unknown",
+      scientificName: top.species?.scientificNameWithoutAuthor || "Unknown",
+      commonName: top.species?.commonNames?.[0] || "Unknown",
       score: Math.round(top.score * 100),
       remainingCalls: data.remainingIdentificationRequests,
     });
   } catch (err) {
-    console.error("Identify error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("[API] ERROR:", err.message);
+    console.error("[API] Stack:", err.stack);
+    res.status(500).json({ error: "Server error: " + err.message });
   }
 });
 
@@ -87,7 +130,7 @@ app.post("/api/permapeople/search", async (req, res) => {
     }
 
     const data = await response.json();
-    res.json(data); // { plants: [ ... ] }
+    res.json(data);
   } catch (err) {
     console.error("PermaPeople search exception:", err);
     res.status(500).json({ error: "Server error in PermaPeople search" });
@@ -114,7 +157,7 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
       const data = JSON.parse(raw);
       return res.json(data);
     } catch (e) {
-      return res.json({ error: "PermaPeople returned non‑JSON", raw });
+      return res.json({ error: "PermaPeople returned non-JSON", raw });
     }
   } catch (err) {
     console.error("PermaPeople plant exception:", err);
@@ -122,7 +165,7 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
   }
 });
 
-// ignore this ajax call: Trefle plant details route
+// Trefle plant details route
 app.get("/api/plant-details", async (req, res) => {
   try {
     const name = req.query.name;
@@ -132,7 +175,6 @@ app.get("/api/plant-details", async (req, res) => {
 
     const trefleToken = process.env.TREFLE_TOKEN;
 
-    // 1. Search Trefle for the plant by scientific name
     const searchUrl = `https://trefle.io/api/v1/plants/search?token=${trefleToken}&q=${encodeURIComponent(name)}`;
     const searchResponse = await fetch(searchUrl);
 
@@ -150,7 +192,6 @@ app.get("/api/plant-details", async (req, res) => {
 
     const plantId = searchData.data[0].id;
 
-    // 2. Fetch full plant details
     const detailUrl = `https://trefle.io/api/v1/plants/${plantId}?token=${trefleToken}`;
     const detailResponse = await fetch(detailUrl);
 
@@ -164,18 +205,16 @@ app.get("/api/plant-details", async (req, res) => {
 
     if (!detailData || !detailData.data) {
       console.error("Unexpected Trefle detail format:", detailData);
-      return res
-        .status(500)
-        .json({ error: "Unexpected Trefle response format" });
+      return res.status(500).json({ error: "Unexpected Trefle response format" });
     }
 
-    // 3. Return clean data to frontend
     res.json(detailData.data);
   } catch (err) {
     console.error("Trefle error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
+
 // page routes
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
@@ -190,15 +229,15 @@ app.get("/plant", (req, res) => {
   res.sendFile(path.join(__dirname, "plant.html"));
 });
 
-// static files AFTER routes
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.static(path.join(__dirname, "src")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.static(path.join(__dirname, "public")));
 
 // 404
 app.use((req, res) => {
-  res.status(404).send("404 Not Found");
+  res.status(404).sendFile(path.join(__dirname, "404.html"));
 });
 
 app.listen(port, () => {

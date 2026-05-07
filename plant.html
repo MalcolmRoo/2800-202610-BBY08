@@ -3,49 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ForageSafe - Result</title>
+    <title>GreenScan - Result</title>
     <link href="/style.css" rel="stylesheet" />
   </head>
   <body>
-    <div id="top-bar">
-      <a href="/camera" id="back-btn">← Scan Again</a>
+    <!-- Bokeh background -->
+    <div class="bokeh-bg">
+      <div class="bokeh bokeh-1"></div>
+      <div class="bokeh bokeh-2"></div>
+      <div class="bokeh bokeh-3"></div>
+      <div class="bokeh bokeh-4"></div>
     </div>
 
-    <div id="plant-container">
-      <!-- safety badge -->
-      <div id="safety-badge">
-        <span id="badge-text">Checking safety...</span>
-      </div>
+    <!-- Top bar -->
+    <div id="top-bar">
+      <a href="/camera" id="back-btn">←</a>
+    </div>
 
-      <!-- plant identity -->
+    <!-- Main container -->
+    <div id="plant-container">
+      <!-- Plant identity -->
       <div id="plant-identity">
         <h1 id="common-name">Loading...</h1>
         <p id="latin-name"></p>
         <p id="confidence"></p>
       </div>
 
-      <!-- plant image -->
+      <!-- Plant image -->
       <div id="plant-image-container">
         <img id="plant-image" src="" alt="Plant image" style="display: none" />
       </div>
 
-      <!-- edibility info -->
-      <div id="edibility-section">
+      <!-- Edibility info -->
+      <div class="info-card" id="edibility-section">
         <h2>Edibility</h2>
         <p id="edibility-info">Loading...</p>
       </div>
 
-      <!-- how to use -->
-      <div id="how-to-section">
+      <!-- How to use -->
+      <div class="info-card" id="how-to-section">
         <h2>How to Use</h2>
         <p id="how-to-info">Loading...</p>
       </div>
 
-      <!-- hazards -->
-      <div id="hazard-section">
+      <!-- Known Hazards -->
+      <div class="info-card" id="hazard-section">
         <h2>Known Hazards</h2>
         <p id="hazard-info">Loading...</p>
       </div>
+
+      <!-- Scan another plant button -->
+      <button class="scan-another-btn" onclick="window.location.href='/camera'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        <span>Scan Another Plant</span>
+      </button>
     </div>
 
     <script src="/plantData.js"></script>
