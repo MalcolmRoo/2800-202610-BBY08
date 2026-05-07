@@ -74,6 +74,8 @@ app.post("/api/permapeople/search", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-permapeople-key-id": process.env.PERMA_KEY_ID,
+        "x-permapeople-key-secret": process.env.PERMA_KEY_SECRET,
       },
       body: JSON.stringify({ q }),
     });
@@ -191,6 +193,8 @@ app.get("/plant", (req, res) => {
 // static files AFTER routes
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.static(path.join(__dirname, "src")));
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // 404
 app.use((req, res) => {
