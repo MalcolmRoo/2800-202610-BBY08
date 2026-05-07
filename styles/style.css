@@ -10,4 +10,5 @@
 /* Plant result page styles */
 @import url('plant.css');
 
-
+/* Search results page styles */
+@import url('search.css');

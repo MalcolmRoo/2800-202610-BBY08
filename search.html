@@ -4,15 +4,63 @@
   </head>
 
   <body>
+    <div id="loading-overlay">
+    <div class="spinner">
+      <div class="stage">
+        <div class="grid">
+          <div class="strip">
+            <div class="tip delay-18"></div>
+            <div class="tip reverse delay-17"></div>
+            <div class="tip delay-16"></div>
+            <div class="tip reverse delay-15"></div>
+            <div class="tip delay-14"></div>
+          </div>
+          <div class="strip">
+            <div class="tip delay-01"></div>
+            <div class="tip reverse delay-02"></div>
+            <div class="tip delay-f"></div>
+            <div class="tip reverse delay-e"></div>
+            <div class="tip delay-d"></div>
+            <div class="tip reverse delay-13"></div>
+            <div class="tip delay-12"></div>
+          </div>
+          <div class="strip">
+            <div class="tip reverse delay-03"></div>
+            <div class="tip delay-04"></div>
+            <div class="tip reverse delay-a"></div>
+            <div class="tip delay-b"></div>
+            <div class="tip reverse delay-c"></div>
+            <div class="tip delay-11"></div>
+            <div class="tip reverse delay-10"></div>
+          </div>
+          <div class="strip">
+            <div class="tip reverse delay-05"></div>
+            <div class="tip delay-06"></div>
+            <div class="tip reverse delay-07"></div>
+            <div class="tip delay-08"></div>
+            <div class="tip reverse delay-09"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text" style="color: white; margin-top: 10px;">Searching for plants...</p>
+  </div>
+
+
     <div class="search-box">
-      <form action="/search">
+      <form id="search-form" action="/search">
         <input
           type="text"
           placeholder="What are you looking for?"
           name="search"
+          id="search-input"
         />
         <button type="submit">Search</button>
       </form>
     </div>
+    <div class="search-results" id="search-results">
+      <!-- Search results will be displayed here -->
+    </div>
+    <script src="/search.js"></script>
   </body>
 </html>
