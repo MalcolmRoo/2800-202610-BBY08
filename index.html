@@ -1,14 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PlantID</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>GreenScan</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 
-<body>
+<body class="index-page">
   <div id="loading-overlay">
     <div class="spinner">
       <div class="stage">
@@ -51,10 +52,6 @@
     <p class="text" style="color: white; margin-top: 10px;">Identifying plant...</p>
   </div>
 
-
-
-
-
   <!-- decorative bokeh background -->
   <div class="bokeh-bg">
     <div class="bokeh bokeh-1"></div>
@@ -75,11 +72,14 @@
     </svg>
   </div>
 
-  <a href="/settings" class="settings">⚙️</a>
+<a href="/settings" class="settings">⚙️</a>
   <div class="app-logo">
-    <div class="logo-icon">🌿</div>
+    <div class="logo-icon">
+      <img src="/logo.png" alt="Logo" class="logo-img" />
+    </div>
   </div>
-  <h1>Placeholder</h1>
+  </div>
+  <h1>GreenScan</h1>
   <p class="app-desc">Identify any plant instantly</p>
   <div class="cards">
     <div class="card-1">
@@ -110,7 +110,7 @@
         <b>Upload photo</b>
         <small>From your library</small>
       </label>
-      <a href="/search" class="card lime">
+      <button id="showSearch" class="card lime">
         <svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2">
           <circle cx="11" cy="11" r="8" />
@@ -118,13 +118,42 @@
         </svg>
         <b>Plant search</b>
         <small>Browse database</small>
-      </a>
+      </button>
+    </div>
+    <div class="search-box" id="textSearchContainer">
+      <form action="/search" method="get">
+        <input
+          id="textSearch"
+          type="text"
+          placeholder="What are you looking for?"
+          name="search"
+        />
+        <button id="textSubmit" type="submit">Search</button>
+      </form>
     </div>
   </div>
 
+  <footer class="footer">
+    <small style="color: #172815;">Powered by <a id="permapeople" href="https://permapeople.org" target="_blank">Permapeople.org</a> & <a id="plantnet" href="https://plantnet.org" target="_blank">Pl@ntNet.org</a></small>
+  </footer>
+
+  <div id="Tutorial">
+    <div id="textContainer">
+      <img id="mascotImg" style="height: 80px; width: 80px; position: absolute; transform: translateX(-65px);" src="/tutorial_mascot.svg"/>
+    </div>
+  </div>
+
+  <div id="Mascot">
+    <div id="messageBox" style="width: 120px; height: 72px; background: darkkhaki; border-radius: 5px;">
+      <p style="color: rgb(0, 0, 0); font-size: 0.8rem; padding: 2px;">Hi! If its your first time here, click on me to let me show you around!</p>
+    </div>
+    <button id="startTutorial"><img style="height: 80px; width: 80px;" src="/tutorial_mascot.svg"/></button>
+  </div>
+
   <script src="/uploadImage.js"></script>
+  <script src="/tutorial.js"></script>
+  <script src="/identify.js"></script>
+  <script src="/index.js"></script>
 </body>
 
-    <!-- ⭐ Add your script tags here -->
-  </body>
 </html>

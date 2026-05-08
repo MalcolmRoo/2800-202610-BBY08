@@ -1,0 +1,108 @@
+
+
+const searchForm = document.querySelector('#search-form'); // Form Id here
+const searchInput = document.querySelector('#search-input'); // Input Id here
+
+
+window.addEventListener('DOMContentLoaded', (e) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('search');
+
+    if(query){
+        performSearch(query);
+    }
+});
+
+async function performSearch(query) {
+    const loader = document.getElementById("loading-overlay");
+    console.log("load search");
+    if (loader) loader.classList.add("visible");
+
+    try {
+        const response = await fetch("/api/permapeople/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ q: query }),
+        });
+        
+        const results = await response.json();
+        if (!response.ok) throw new Error(results.error);
+
+        displayResults(results);
+    } catch (err) {
+        console.error("Search failed:", err);
+    } finally {
+        if (loader) loader.classList.remove("visible");
+    }
+}
+
+searchForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("form search");
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    //Show loading overlay
+    const loader = document.getElementById("loading-overlay");
+    if (loader) loader.classList.add("visible");
+
+    try {
+        const response = await fetch("/api/permapeople/search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ q: query }),
+        });
+
+        const results = await response.json();
+
+        if (!response.ok) throw new Error(results.error);
+
+        // Display the search results
+        console.log("Search Results:", results);
+        displayResults(results); 
+
+    } catch (err) {
+        console.error("Search failed:", err);
+        alert("Search failed. Please try again.");
+    } finally {
+        //hide loading overlay
+        if (loader) loader.classList.remove("visible");
+    }
+});
+
+function displayResults(results) {
+    const plantArray = results.plants;
+    const resultsContainer = document.getElementById("search-results");// Results container Id here
+    resultsContainer.innerHTML = "";
+    for (const plant of plantArray) {
+        // Create a new element for each plant result
+        const plantElement = document.createElement("div");
+        plantElement.classList.add("plant-result");
+        // Add common name
+        const p = document.createElement("p")
+        p.textContent = plant.name
+        plantElement.appendChild(p);
+        // Add scientific name in smaller text
+        const s = document.createElement("small")
+        s.textContent = plant.scientific_name
+        plantElement.appendChild(s);
+
+        plantElement.addEventListener("click", async () => {
+             // When a plant is clicked, navigate to the plant details page with query parameters
+             const queryParams = new URLSearchParams({
+                id: plant.id,
+                name: plant.name,
+                latin: plant.scientific_name || "",
+                score: "100", // Since this is a search result, we can assume 100% confidence for the sake of display
+        });
+    
+            window.location.href = `/plant?${queryParams.toString()}`;
+                });
+
+
+        resultsContainer.appendChild(plantElement);
+    }
+}
+
