@@ -1,10 +1,10 @@
-const searchForm = document.querySelector('#search-form'); // Form Id here
-const searchInput = document.querySelector('#search-input'); // Input Id here
+const searchInput = document.querySelector('.search-input');
+const searchBtn = document.querySelector('.search-submit-btn');
 
-const startSearch = document.getElementById("showSearch"); //Main menu button unhides search form
-const searchBar = document.getElementById("textSearchContainer");
-
-startSearch.addEventListener('click', (event) =>{
-    searchBar.style.display = "inline";
-    searchBar.focus();
+searchInput.addEventListener('input', () => {
+  if (searchInput.value.trim().length > 0) {
+    searchBtn.classList.add('active');
+  } else {
+    searchBtn.classList.remove('active');
+  }
 });

@@ -176,6 +176,12 @@ app.get("/search", (req, res) => {
 app.get("/plant", (req, res) => {
   res.sendFile(path.join(__dirname, "plant.html"));
 });
+app.get("/favorites", (req, res) => {
+  res.sendFile(path.join(__dirname, "favorites.html"));
+});
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "settings.html"));
+});
 
 // static files AFTER routes — styles, src scripts, and public assets
 app.use(express.static(path.join(__dirname, "styles")));
