@@ -13,8 +13,6 @@ async function findPlantInCSV(searchTerm) {
             const common = (row['PlantName'] || '').toLowerCase().trim();
             const scientific = (row['ScientificName'] || '').toLowerCase().trim();
 
-            console.log(common);
-
             if(common.includes(query) || scientific.includes(query)) {
                 isResolved = true;
                 // match = row;

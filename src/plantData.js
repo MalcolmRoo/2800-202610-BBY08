@@ -73,6 +73,10 @@ function displayPlant(data) {
   const details = document.getElementById("plant-details");
   details.innerHTML = "";
 
+  //Assigning Local Data to variables
+  const isLocal = data.is_local;
+  const localData = data.local_data;
+
   // Plant image from Permapeople CDN — larger image below
   if (data.images?.title) {
     const img = document.getElementById("plant-image");
@@ -89,6 +93,7 @@ function displayPlant(data) {
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
+  
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
@@ -115,6 +120,8 @@ function displayPlant(data) {
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
+  if(isLocal) //Local Database
+    edibilityContent += `<p><strong>Extra Knowledge:</strong> ${localData.EdibleParts} ${localData.PreparationMethods}</p>`;
   if (!edibleParts && !edibleUses)
     edibilityContent = `<p>${isEdible ? "This plant is edible." : "This plant is not edible."}</p>`;
   addSection("Edibility", edibilityContent);
@@ -137,6 +144,8 @@ function displayPlant(data) {
   if (warning) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
+  if(isLocal) //Local Database
+    hazardContent += `<p><strong>Extra Warnings:</strong> ${localData.Warnings}</p>`;
   addSection("Known Hazards", hazardContent || null, true); // isHazard = true
 
   // Plant Info
