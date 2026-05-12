@@ -6,19 +6,27 @@ async function findPlantInCSV(searchTerm) {
     return new Promise((resolve, reject) => {
         const csvPath = "./data/PNWPlants.csv";
         const query = searchTerm.toLowerCase().trim();
-        let match = null;
+        // let match = null;
+        let isResolved = false;
 
         const stream = fs.createReadStream(csvPath).pipe(csv()).on('data', (row) => {
-            const common = (row['CommonName'] || '').toLowerCase();
-            const scientific = (row['ScientificName'] || '').toLowerCase();
+            const common = (row['PlantName'] || '').toLowerCase().trim();
+            const scientific = (row['ScientificName'] || '').toLowerCase().trim();
+
+            console.log(common);
 
             if(common.includes(query) || scientific.includes(query)) {
-                match = row;
+                isResolved = true;
+                // match = row;
                 stream.destroy();
+                resolve(row);
             }
         })
-        .on('end', () => resolve(match))
-        .on('close', () => resolve(null))
+        .on('close', () => {
+            if (!isResolved) {
+                resolve(null);
+            }
+        })
         .on('error', (err) => reject(err));
     })
 }

@@ -153,13 +153,15 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
 
     const raw = await response.text();
     
-    //checks local csv database for a match
-    const name = raw.commonName || "";
-    const localInfo = await findPlantInCSV(name);
+    
 
     // Parse JSON response safely
     try {
       const data = JSON.parse(raw);
+
+      //checks local csv database for a match
+      const name = data.name || "";
+      const localInfo = await findPlantInCSV(name);
       
       const finalData = {
         ...data,
