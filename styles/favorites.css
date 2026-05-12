@@ -1,0 +1,69 @@
+:root {
+  --olive-dark: #3E5622;
+  --sage-light: #95B46A;
+  --bg: #688048;
+  --grad: linear-gradient(135deg, #3E5622, #2D4420);
+  --dark-text: #172815;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body.favorites-page {
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.back-home { position: absolute; top: 20px; left: 20px; color: var(--olive-dark); text-decoration: none; font-size: 18px; opacity: 0.7; }
+
+.fav-header { text-align: center; margin-bottom: 30px; }
+.fav-header h1 { color: var(--dark-text); font-size: 36px; margin-bottom: 8px; }
+.fav-header p { color: var(--sage-light); font-size: 16px; }
+
+#favorites-list { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; }
+
+.fav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--grad);
+  color: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+
+.fav-item:active, .scan-btn:active { transform: scale(0.97); }
+.fav-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.fav-info p { font-size: 14px; opacity: 0.8; font-style: italic; }
+
+.fav-remove { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; padding: 8px; border-radius: 50%; transition: background .15s ease; }
+.fav-remove:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+#empty-state { text-align: center; padding: 40px 20px; }
+#empty-state p { color: var(--dark-text); font-size: 16px; margin-bottom: 8px; }
+
+.scan-btn { display: inline-block; margin-top: 20px; padding: 14px 28px; background: var(--grad); color: #fff; text-decoration: none; border-radius: 22px; font-size: 16px; transition: transform .15s ease; }
+
+.hidden { display: none !important; }
+
+.bokeh-bg { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
+.bokeh { position: absolute; border-radius: 50%; filter: blur(60px); animation: bokehFloat 8s ease-in-out infinite; }
+.bokeh-1 { width: 300px; height: 300px; background: rgba(62,86,34,.08); top: -50px; right: -50px; }
+.bokeh-2 { width: 200px; height: 200px; background: rgba(112,146,85,.06); bottom: 20%; left: -30px; animation-delay: 1s; }
+.bokeh-3 { width: 250px; height: 250px; background: rgba(149,180,106,.05); top: 40%; right: -50px; animation-delay: 2s; }
+.bokeh-4 { width: 150px; height: 150px; background: rgba(112,146,85,.06); bottom: -30px; left: 30%; animation-delay: 3s; }
+
+@keyframes bokehFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.watermark { position: fixed; top: 60px; right: 10px; z-index: 0; opacity: 0.4; }
