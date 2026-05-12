@@ -110,35 +110,33 @@
         <b>Upload photo</b>
         <small>From your library</small>
       </label>
-      <button id="showSearch" class="card lime">
+      <a href="/favorites" class="card lime" id="favourites-card">
         <svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.77l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
-        <b>Plant search</b>
-        <small>Browse database</small>
-      </button>
+        <b>Favourites</b>
+        <small>Your saved plants</small>
+      </a>
     </div>
-    <a href="/favorites" class="card mint" id="favorites-card">
-      <svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+<form action="/search" method="get" class="search-bar">
+      <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.77l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
       </svg>
-      <b>Favorites</b>
-      <small>Your saved plants</small>
-    </a>
-    <div class="search-box" id="textSearchContainer">
-      <form action="/search" method="get">
-        <input
-          id="textSearch"
-          type="text"
-          placeholder="What are you looking for?"
-          name="search"
-        />
-        <button id="textSubmit" type="submit">Search</button>
-      </form>
-    </div>
+      <input
+        type="text"
+        placeholder="Search plants..."
+        name="search"
+        class="search-input"
+      />
+      <button type="submit" class="search-submit-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </form>
   </div>
 
   <footer class="footer">
