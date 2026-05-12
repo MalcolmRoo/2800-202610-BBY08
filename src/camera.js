@@ -19,13 +19,27 @@ function accessCamera() {
   CANVAS.width = window.innerWidth;
   CANVAS.height = window.innerHeight;
 
+
   navigator.mediaDevices
     .getUserMedia({ video: { facingMode: "environment" } })
     .then(function (stream) {
       VIDEO = document.createElement("video");
+      
+      VIDEO.setAttribute("playsinline", "true");
+      VIDEO.setAttribute("muted", "true");
+      VIDEO.autoplay = true;
+      
+      VIDEO.style.position = "absolute";
+      VIDEO.style.opacity = "0";
+      VIDEO.style.pointerEvents = "none";
+      VIDEO.style.height = "1px";
+      VIDEO.style.width = "1px";
+      document.body.appendChild(VIDEO);
+
       VIDEO.srcObject = stream;
-      VIDEO.play();
+      
       VIDEO.onloadeddata = function () {
+        VIDEO.play();
         updateCanvas();
       };
     })
