@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenScan - Favorites</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="favorites-page">
+
+<div class="bokeh-bg">
+    <div class="bokeh bokeh-1"></div>
+    <div class="bokeh bokeh-2"></div>
+    <div class="bokeh bokeh-3"></div>
+    <div class="bokeh bokeh-4"></div>
+  </div>
+
+  <div class="watermark">
+    <svg width="300" height="300" viewBox="0 0 200 200" fill="none">
+      <path d="M100 20C60 20 30 50 30 90C30 130 60 160 100 180C140 160 170 130 170 90C170 50 140 20 100 20"
+        stroke="#3E5622" stroke-width="0.5" opacity="0.08" />
+      <path d="M100 40C70 40 50 60 50 90C50 120 70 140 100 160" stroke="#3E5622" stroke-width="0.5" opacity="0.06" />
+      <circle cx="100" cy="50" r="8" stroke="#3E5622" stroke-width="0.5" opacity="0.05" />
+      <circle cx="80" cy="80" r="5" stroke="#3E5622" stroke-width="0.5" opacity="0.04" />
+      <circle cx="120" cy="70" r="6" stroke="#3E5622" stroke-width="0.5" opacity="0.05" />
+      <path d="M70 120 Q85 100 100 110 Q115 100 130 120" stroke="#3E5622" stroke-width="0.5" opacity="0.04" />
+    </svg>
+  </div>
+
+<a href="/" class="back-home">← Home</a>
+
+<div class="fav-header">
+    <h1>Your Favorites</h1>
+    <p>Plants you've saved</p>
+</div>
+
+<div id="favorites-list"></div>
+
+<div id="empty-state">
+    <p>No favorites yet.</p>
+    <p>Scan a plant and tap the heart to save it.</p>
+    <a href="/camera" class="scan-btn">Scan a Plant</a>
+</div>
+
+<script src="/favorites.js"></script>
+</body>
+
+</html>

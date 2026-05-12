@@ -163,3 +163,8 @@ function displayPlant(data) {
 if (latinName) {
   fetchPermapeople(latinName);
 }
+
+// Initialize favorite button after plant is loaded
+if (typeof initFavButton === 'function') {
+  initFavButton(latinName || commonName);
+}
