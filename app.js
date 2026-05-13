@@ -5,10 +5,15 @@ const cors = require("cors");
 const multer = require("multer");
 const fetch = require("node-fetch").default;
 const FormData = require("form-data");
+const fs = require("fs");
+const csv = require("csv-parser");
+const {findPlantInCSV} = require('./src/csvParse');
 
 const app = express();
 const port = process.env.PORT || 3000;
 const upload = multer({ storage: multer.memoryStorage() });
+
+
 
 // middleware
 app.use(cors());
@@ -147,11 +152,26 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
     });
 
     const raw = await response.text();
+    
+    
 
     // Parse JSON response safely
     try {
       const data = JSON.parse(raw);
-      return res.json(data);
+
+      //checks local csv database for a match
+      const name = data.name || "";
+      const localInfo = await findPlantInCSV(name);
+      
+      const finalData = {
+        ...data,
+        local_data: localInfo || null,
+        is_local: !!localInfo
+      }
+
+      console.log(finalData);
+
+      return res.json(finalData);
     } catch (e) {
       return res.json({ error: "PermaPeople returned non-JSON", raw });
     }
@@ -160,8 +180,6 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
     res.json({ error: "Server error in PermaPeople plant fetch" });
   }
 });
-
-
 
 // page routes — serve HTML files
 app.get("/", (req, res) => {
@@ -176,11 +194,18 @@ app.get("/search", (req, res) => {
 app.get("/plant", (req, res) => {
   res.sendFile(path.join(__dirname, "plant.html"));
 });
+app.get("/favorites", (req, res) => {
+  res.sendFile(path.join(__dirname, "favorites.html"));
+});
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "settings.html"));
+});
 
 // static files AFTER routes — styles, src scripts, and public assets
 app.use(express.static(path.join(__dirname, "styles")));
 app.use(express.static(path.join(__dirname, "src")));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "data")));
 
 // 404 handler
 app.use((req, res) => {

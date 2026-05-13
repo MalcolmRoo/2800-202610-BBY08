@@ -12,3 +12,6 @@
 
 /* Search results page styles */
 @import url('search.css');
+
+/* Favorites page styles */
+@import url('favorites.css');

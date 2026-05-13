@@ -50,8 +50,9 @@ body {
   position: absolute;
   top: 16px;
   left: 16px;
-  width: 42px;
-  height: 42px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
@@ -61,6 +62,32 @@ body {
   color: white;
   text-decoration: none;
   transition: all 0.2s ease;
+}
+
+#fav-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  pointer-events: auto !important;
+  opacity: 1;
+  visibility: visible;
+}
+
+#fav-btn.active {
+  background: rgba(149, 180, 106, 0.3);
+  border-color: rgba(149, 180, 106, 0.5);
 }
 
 #back-btn:active {
@@ -150,7 +177,7 @@ body {
   padding: 24px 16px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .info-card {
@@ -256,7 +283,7 @@ body {
   }
   #content-area {
     padding: 16px 12px 20px;
-    gap: 12px;
+    gap: 18px;
   }
   .info-card {
     padding: 16px;

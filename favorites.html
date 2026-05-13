@@ -3,12 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GreenScan</title>
-  <link rel="stylesheet" href="404.css" />
+  <title>GreenScan - Favorites</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+
+<body class="favorites-page">
 
 <div class="bokeh-bg">
     <div class="bokeh bokeh-1"></div>
@@ -29,15 +29,22 @@
     </svg>
   </div>
 
-  <div class="app-logo">
-    <div class="logo-icon">
-      <img src="/logo1.png" alt="Logo" class="logo-img" />
-    </div>
-  </div>
-  <h1>Unknown Species</h1>
-    <p class="home-link">We can't identify this page. It might be a digital weed.</p>
-  <a href="/">Back to the Garden</a>
+<a href="/" class="back-home">← Home</a>
+
+<div class="fav-header">
+    <h1>Your Favorites</h1>
+    <p>Plants you've saved</p>
 </div>
 
+<div id="favorites-list"></div>
+
+<div id="empty-state">
+    <p>No favorites yet.</p>
+    <p>Scan a plant and tap the heart to save it.</p>
+    <a href="/camera" class="scan-btn">Scan a Plant</a>
+</div>
+
+<script src="/favorites.js"></script>
 </body>
+
 </html>
