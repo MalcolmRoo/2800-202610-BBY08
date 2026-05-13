@@ -4,6 +4,7 @@ const commonName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
 
+
 // Fill in PlantNet data immediately on page load
 document.getElementById("common-name").textContent = commonName;
 document.getElementById("latin-name").textContent = latinName;
@@ -135,6 +136,13 @@ function displayPlant(data) {
     "Leaves",
     "Medicinal",
   ];
+
+  // Special alert for Apiaceae family, which includes deadly plants like poison hemlock
+    const family = getField(d, "Family");
+    if (family.toLowerCase().includes("apiaceae")) {
+      alert("You found the apiaceae family, ignore this for now - Zach");
+    }
+
   let infoContent = "";
   infoKeys.forEach((key) => {
     const val = getField(d, key);
