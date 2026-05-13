@@ -1,77 +1,38 @@
-function getShareData() {
-  const commonName = document.getElementById('common-name')?.textContent || 'Unknown Plant';
-  const latinName = document.getElementById('latin-name')?.textContent || '';
-  const score = document.getElementById('confidence')?.textContent || '';
-  const status = document.getElementById('stat-status')?.textContent || '';
-  const edible = document.getElementById('stat-edible')?.textContent || '';
+// 1. Pulls plant details from the page and cleans the text, returning empty if information is missing.
+const el = (id) => document.getElementById(id)?.textContent?.trim() || '';
 
-  const shareText = `${commonName}${latinName ? ` (${latinName})` : ''}${score ? ` — ${score} confidence` : ''}${status ? ` — ${status}` : ''}${edible ? ` — Edible: ${edible}` : ''}`;
+async function sharePlant(e) {
+  // 3. Remembers exactly which button was clicked so the code knows where to display the "Copied!" message later.
+  const btn = e.currentTarget;
+  const common = el('common-name') || 'Unknown Plant';
+  
+  // 2. Takes those pieces and joins them into a clean sentence.
+  const text = [
+    `${common}${el('latin-name') ? ` (${el('latin-name')})` : ''}`,
+    el('confidence') ? `${el('confidence')} confidence` : '',
+    el('stat-status'),
+    el('stat-edible') ? `Edible: ${el('stat-edible')}` : ''
+  ].filter(Boolean).join(' — ');
 
-  return {
-    title: `GreenScan: ${commonName}`,
-    text: shareText,
-    url: window.location.href
-  };
-}
+  // 4. Boxes up your text and the website link to send out.
+  const data = { title: `GreenScan: ${common}`, text, url: location.href };
 
-async function sharePlant() {
-  const shareBtn = document.getElementById('share-btn');
-  const shareData = getShareData();
-
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Share failed:', err);
-        fallbackCopyToClipboard(shareBtn, shareData.text);
-      }
-    }
-  } else {
-    fallbackCopyToClipboard(shareBtn, shareData.text);
-  }
-}
-
-async function fallbackCopyToClipboard(btn, text) {
   try {
-    await navigator.clipboard.writeText(text);
-    showCopyFeedback(btn, 'Copied!');
+    // 5. Tries to open the phone's "Share Menu" (like for Texting or Apps).
+    if (navigator.share) await navigator.share(data);
+    else throw 0;
   } catch (err) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand('copy');
-      showCopyFeedback(btn, 'Copied!');
-    } catch (e) {
-      showCopyFeedback(btn, 'Copy failed');
-    }
-    document.body.removeChild(textarea);
+    // 6. If sharing fails, it saves the text to your clipboard instead.
+    if (err.name === 'AbortError') return; // Don't do anything if the user just hit 'Cancel'.
+    navigator.clipboard.writeText(text).then(() => {
+      
+      // 7. Swaps the button text to "Copied!" for 2 seconds to show it worked.
+      const old = btn.innerHTML;
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerHTML = old, 2000);
+    });
   }
 }
 
-function showCopyFeedback(btn, message) {
-  const originalHTML = btn.innerHTML;
-  const originalWidth = btn.style.width;
-  btn.innerHTML = `<span style="font-size:11px;font-weight:700;">${message}</span>`;
-  btn.style.width = 'auto';
-  btn.style.minWidth = '48px';
-  setTimeout(() => {
-    btn.innerHTML = originalHTML;
-    btn.style.width = originalWidth;
-    btn.style.minWidth = '';
-  }, 2000);
-}
-
-function initShareButton() {
-  const btn = document.getElementById('share-btn');
-  if (!btn) return;
-  btn.addEventListener('click', sharePlant);
-}
-
-if (document.getElementById('share-btn')) {
-  initShareButton();
-}
+// 8. Finds the share button on your page and waits for you to click it.
+document.getElementById('share-btn')?.addEventListener('click', sharePlant);

@@ -39,7 +39,7 @@ body {
 
 #hero-panel {
   background: var(--bg-card);
-  padding: 40px 20px;
+  padding: 120px 20px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,10 +49,10 @@ body {
 #back-btn {
   position: absolute;
   top: 16px;
-  left: 16px;
+  left: 8px;
   z-index: 30;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
@@ -67,10 +67,10 @@ body {
 #share-btn {
   position: absolute;
   top: 16px;
-  right: 72px;
+  right: 84px;
   z-index: 100;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
@@ -92,10 +92,10 @@ body {
 #fav-btn {
   position: absolute;
   top: 16px;
-  right: 16px;
+  right: 8px;
   z-index: 100;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
@@ -117,32 +117,6 @@ body {
 
 #back-btn:active {
   transform: scale(0.95);
-}
-
-#plant-icon {
-  width: 110px;
-  height: 110px;
-  background: var(--bg-main);
-  border: 3px solid var(--accent);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-#plant-icon svg {
-  width: 64px;
-  height: 64px;
-}
-
-.label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin: 16px 0;
 }
 
 #common-name {
@@ -287,19 +261,12 @@ body {
 .scan-another-btn:active {
   transform: translateY(0);
 }
+
 .scan-another-btn svg {
   color: var(--accent);
 }
 
 @media (max-width: 400px) {
-  #plant-icon {
-    width: 76px;
-    height: 76px;
-  }
-  #plant-icon svg {
-    width: 34px;
-    height: 34px;
-  }
   #common-name {
     font-size: 26px;
   }
@@ -329,15 +296,6 @@ body {
 .stat-value.safe {
   color: #4a9f4a;
 }
-#plant-icon.danger {
-  border-color: #e05252;
-}
-#plant-icon.danger svg path {
-  stroke: #e05252;
-}
-.label.danger {
-  color: #e05252;
-}
 
 /* Plant image */
 #plant-image {
@@ -347,32 +305,6 @@ body {
   border-radius: 18px;
   margin-bottom: 8px;
   border: 1px solid var(--accent-border);
-}
-
-/* Dynamic sections — match info-card style */
-.info-card {
-  background: var(--bg-card);
-  border-radius: 18px;
-  padding: 22px 24px;
-  border: 1px solid var(--accent-border);
-  position: relative;
-  margin-bottom: 0;
-}
-
-.info-card h2 {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  margin-bottom: 12px;
-}
-
-.info-card p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 15px;
-  line-height: 1.7;
-  margin-top: 6px;
 }
 
 .info-card p strong {
