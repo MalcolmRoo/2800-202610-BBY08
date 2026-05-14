@@ -61,6 +61,13 @@ async function fetchPermapeople(scientificName) {
     const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
     const data = await plantRes.json();
 
+    //If there is toxic look-alike a warning is applied
+    if (data.trigger_warning) {
+
+      renderWarning(data);
+    
+  };
+
     // Step 3 — display the data
     displayPlant(data);
   } catch (err) {
@@ -165,7 +172,8 @@ function displayPlant(data) {
   // Special alert for Apiaceae family, which includes deadly plants like poison hemlock
     const family = getField(d, "Family");
     if (family.toLowerCase().includes("apiaceae")) {
-      alert("You found the apiaceae family, ignore this for now - Zach");
+      const risk = document.querySelector(".risk");
+      risk.style.display = "flex";
     }
 
   let infoContent = "";
@@ -205,3 +213,70 @@ if (latinName) {
 if (typeof initFavButton === 'function') {
   initFavButton(latinName || commonName);
 }
+
+async function renderWarning(data) {
+  const local = data.local_data;
+    const overlay = document.getElementById('warning-overlay');
+    const warnId = document.getElementById('identify-text');
+    const safeName = document.getElementById('safe-name');
+    const deadlyName = document.getElementById('deadly-name');
+    const safeTip = document.getElementById('safe-tip');
+    const deadlyTip = document.getElementById('deadly-tip');
+    const safeImg = document.getElementById('safe-img');
+    const deadlyImg = document.getElementById('deadly-img');
+
+    // Inject the data into the tags
+    warnId.innerText = "You have Identified " + local.PlantName + " there is a toxic look-alike that could be FATAL if consumed.";
+
+    safeName.innerText = local.PlantName;
+    deadlyName.innerText = local.LookAlike;
+
+    safeImg.src = data.images.title;
+
+    const lookAlikeImg = await fetchlookAlikeImg(local.lookAlikeInfo.ScientificName);
+    deadlyImg.src = lookAlikeImg;
+    
+    safeTip.innerText = local.Identification;
+    deadlyTip.innerText = local.lookAlikeInfo.Identification;
+
+    // Show the overlay by changing the style
+    overlay.style.display = 'flex';
+    
+
+    //close button
+    document.getElementById('proceed-btn').onclick = () => {
+        overlay.style.display = 'none';
+    };
+
+    document.getElementById('cancel-btn').onclick = () => {
+      window.location.href = '/';
+    }
+}
+
+async function fetchlookAlikeImg (scientificName) {
+   try {
+    // Step 1 — search Permapeople by scientific name
+    const searchRes = await fetch("/api/permapeople/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: scientificName }),
+    });
+
+    const searchData = await searchRes.json();
+    const first = searchData.plants?.[0];
+
+    if (!first) return;
+
+    // Step 2 — fetch full plant details using ID from search
+    const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
+    const data = await plantRes.json();
+
+    return data.images.title;
+
+} catch(err) {
+console.error("Permapeople error:", err);
+}
+}
+
+
+

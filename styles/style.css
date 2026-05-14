@@ -15,3 +15,6 @@
 
 /* Favorites page styles */
 @import url('favorites.css');
+
+/*warning overlay*/
+@import url('warning.css')

@@ -1,0 +1,179 @@
+#warning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9); /* Darker for higher focus */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensures it stays on top of everything */
+}
+
+
+#container {
+    background: linear-gradient(to bottom, #8B0000, #1a2a1a 40%);
+    /*background-color: #1a2a1a; */
+    border: 3px solid #ffd84d; 
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 90%;
+    width: 400px;
+    text-align: center;
+    color: #f5e6be;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.img-container {
+    position: relative;
+    width: 150px;  
+    height: 150px;
+    margin: 0 auto; 
+}
+
+.skull {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    width: 100px;
+    z-index: 2;
+    filter:     drop-shadow(1px 0 0 #ffd84d) 
+                drop-shadow(-1px 0 0 #ffd84d) 
+                drop-shadow(0 1px 0 #ffd84d) 
+                drop-shadow(0 -1px 0 #ffd84d);
+
+}
+
+.circle {
+    filter: hue-rotate(-20deg) brightness(0.5) saturate(1.5)
+                drop-shadow(1px 0 0 #ffd84d) 
+                drop-shadow(-1px 0 0 #ffd84d) 
+                drop-shadow(0 1px 0 #ffd84d) 
+                drop-shadow(0 -1px 0 #ffd84d);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    
+    
+}
+#title {
+    color: #ff4d4d; 
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+#identify-text {
+    margin-bottom: 15px;
+}
+
+/* Row for the side-by-side comparison cards */
+.comparison-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+#safe-img, #deadly-img {
+    width: 100%;
+    height:auto ;
+    border-radius: 15px;
+    margin-block: 10px;
+}
+
+#safe-card, #deadly-card {
+    flex: 1;
+    height: 250px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: inset 0 -10px 10px -6px #111b11;
+     &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+.status-label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+
+.status-label.safe { color: #4caf50; }
+.status-label.deadly { color: #ff4d4d; }
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 25px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#cancel-btn {
+    background-color: #f5e6be;
+    color: #1a2a1a;
+}
+
+#proceed-btn {
+    background-color: #8b0000;
+    color: white;
+    opacity: 0.8; 
+}
+#cancel-btn:hover {
+    filter: brightness(0.8);
+}
+#proceed-btn:hover {
+    opacity: 1;
+}
+
+/* For high risk banner */
+.risk {
+    display: none;
+    flex-wrap: wrap;
+    background-color: rgba(235, 247, 11, 0.73);
+    border-radius: 20px;
+    border: 2px solid ;
+    padding-block:5px;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    &:hover {
+        height: fit-content;
+    }
+    &:hover .expand-text {
+        display:block;
+    }
+    &:focus {
+        height: fit-content;
+    }
+    &:focus .expand-text {
+        display:block;
+    }
+}
+
+.expand-text {
+    display: none;
+    margin:10px;
+}
+
+
+#risk-img {
+    width: 30px;
+    height: 30px;
+    margin-inline: 5px;
+}
+
+#risk-text {
+    font-weight: 400;
+    margin-right: 5px;
+}

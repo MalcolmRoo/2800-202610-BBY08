@@ -169,6 +169,12 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
         is_local: !!localInfo
       }
 
+      if (finalData.is_local && finalData.local_data.LookAlike?.trim() !== ""){
+        finalData.trigger_warning = true;
+        const lookAlikeName = finalData.local_data.LookAlike;
+        const lookAlikeInfo = await findPlantInCSV(lookAlikeName);
+        finalData.local_data.lookAlikeInfo = lookAlikeInfo;
+      }
       console.log(finalData);
 
       return res.json(finalData);
