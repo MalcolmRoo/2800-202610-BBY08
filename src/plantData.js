@@ -118,10 +118,10 @@ function displayPlant(data) {
   let edibilityContent = "";
   if (edibleParts)
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
+  else if(isLocal && localData.EdibleParts != "") //Local Database
+    edibilityContent += `<p> ${localData.EdibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
-  if(isLocal) //Local Database
-    edibilityContent += `<p><strong>Extra Knowledge:</strong> ${localData.EdibleParts} ${localData.PreparationMethods}</p>`;
   if (!edibleParts && !edibleUses)
     edibilityContent = `<p>${isEdible ? "This plant is edible." : "This plant is not edible."}</p>`;
   addSection("Edibility", edibilityContent);
@@ -134,6 +134,9 @@ function displayPlant(data) {
     const paragraphs = description.split("\r\n\r\n").slice(0, 2).join(" ");
     howToContent += `<p>${paragraphs}</p>`;
   }
+  if(isLocal && localData.PreparationMethods != ""){
+    howToContent += `<p><strong>Preparation Methods:</strong> ${localData.PreparationMethods}</p>`;
+  }
   if (utility) howToContent += `<p><strong>Known Uses:</strong> ${utility}</p>`;
   addSection("How to Use", howToContent || null);
 
@@ -141,12 +144,18 @@ function displayPlant(data) {
   const warning = getField(d, "Warning");
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
-  if (warning) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if(warning && isLocal && localData.Warnings != "") //Local Database
+    hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
-  if(isLocal) //Local Database
-    hazardContent += `<p><strong>Extra Warnings:</strong> ${localData.Warnings}</p>`;
+  
   addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+
+  let extraNotes = "";
+  if(isLocal && localData.Notes != "")
+    extraNotes += `<p><strong>Additional Details:</strong> ${localData.Notes}`;
+  addSection("Extra Notes", extraNotes);
 
   // Plant Info
   const infoKeys = [
