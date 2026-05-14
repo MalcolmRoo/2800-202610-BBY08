@@ -18,10 +18,10 @@ async function accessCamera() {
     CONTEXT = CANVAS.getContext("2d");
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Camera API is not supported. Ensure you are using HTTPS and a compatible mobile browser.");
+        alert("Camera API is not supported. Ensure you browser is compatible, your connection is secure, and the app is given Camera access.");
         return; 
     }
-    
+
     // Set canvas to a reasonable size
     CANVAS.width = window.innerWidth;
     CANVAS.height = window.innerHeight;
