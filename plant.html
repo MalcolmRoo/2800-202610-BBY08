@@ -8,6 +8,35 @@
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
+    <!-- Warning overlay-->
+    <div id="warning-overlay" style="display: none">
+            <div id="container">
+                <div class="img-container">
+                    <img class="skull" src="skull%20(1).png" />
+                    <img class="circle" src="circle.png" />
+                </div>
+                <h2 id="title">CRITICAL LOOK-ALIKE ALERT</h2>
+                <p id="identify-text"></p>
+                <div class="comparison-row">
+                    <div id="safe-card">
+                        <span class="status-label safe">SAFE</span>
+                        <b id="safe-name"></b>
+                        <img id="safe-img">
+                        <p id="safe-tip"></p>
+                    </div>
+                    <div id="deadly-card">
+                        <span class="status-label deadly">TOXIC</span>
+                        <b id="deadly-name"></b>
+                        <img id="deadly-img">
+                        <p id="deadly-tip"></p>
+                    </div>
+                </div>
+                <button id="cancel-btn">I AM UNSURE - CANCEL</button>
+                <button id="proceed-btn">I AM CONFIDENT - PROCEED</button>
+            </div>
+        </div>
+
+
     <div id="result-page">
       <!-- Hero panel — plant icon, name, stats bar -->
       <div id="hero-panel">
@@ -64,6 +93,18 @@
 
         <h1 id="common-name">Loading...</h1>
         <p id="latin-name"></p>
+
+        <div class="risk" tabindex="0">
+            <img src="warning.png" id="risk-img">
+            <p id="risk-text"><b>Apiaceae Family:</b> High risk  for toxic look-alikes.</p>
+            <div class="break"></div>
+            <div class="expand-text">
+                The Apiaceae family (formerly known as Umbelliferae) is one of the most
+                significant plant families for foragers and botanists 
+                in British Columbia and the Pacific Northwest due to its mix of highly 
+                prized edibles and some of the world's most lethal toxins.
+            </div>
+        </div>
 
         <!-- Stats bar — filled by plantData.js -->
         <div id="stats-bar">
