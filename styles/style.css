@@ -14,7 +14,12 @@
 @import url("search.css");
 
 /* Favorites page styles */
-@import url("favorites.css");
+@import url('favorites.css');
+
+/*warning overlay*/
+@import url('warning.css');
+
+@import url('favorites.css');
 
 /* Chat page styles */
 @import url("chat.css");
