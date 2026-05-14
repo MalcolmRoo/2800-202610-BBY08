@@ -13,40 +13,52 @@ document.addEventListener("DOMContentLoaded", function () {
   accessCamera();
 });
 
-function accessCamera() {
-  CANVAS = document.getElementById("camCanvas");
-  CONTEXT = CANVAS.getContext("2d");
-  CANVAS.width = window.innerWidth;
-  CANVAS.height = window.innerHeight;
+async function accessCamera() {
+    CANVAS = document.getElementById("camCanvas");
+    CONTEXT = CANVAS.getContext("2d");
 
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Camera API is not supported. Ensure you are using HTTPS and a compatible mobile browser.");
+        return; 
+    }
+    
+    // Set canvas to a reasonable size
+    CANVAS.width = window.innerWidth;
+    CANVAS.height = window.innerHeight;
 
-  navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: "environment" } })
-    .then(function (stream) {
-      VIDEO = document.createElement("video");
-      
-      VIDEO.setAttribute("playsinline", "true");
-      VIDEO.setAttribute("muted", "true");
-      VIDEO.autoplay = true;
-      
-      VIDEO.style.position = "absolute";
-      VIDEO.style.opacity = "0";
-      VIDEO.style.pointerEvents = "none";
-      VIDEO.style.height = "1px";
-      VIDEO.style.width = "1px";
-      document.body.appendChild(VIDEO);
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } 
+        });
+        
+        VIDEO = document.createElement("video");
+        
+        // 1. MUST set playsinline in JS
+        VIDEO.playsInline = true; 
+        VIDEO.muted = true;
+        VIDEO.autoplay = true;
+        
+        // 2. Hide the video, but give it a size so mobile can process it
+        VIDEO.style.position = "absolute";
+        VIDEO.style.opacity = "0";
+        VIDEO.style.pointerEvents = "none";
+        VIDEO.style.width = "100px";
+        VIDEO.style.height = "100px";
+        VIDEO.style.top = "-9999px"; // Move off-screen instead of tiny
 
-      VIDEO.srcObject = stream;
-      
-      VIDEO.onloadeddata = function () {
-        VIDEO.play();
-        updateCanvas();
-      };
-    })
-    .catch(function (err) {
-      alert("Camera error: " + err);
-    });
+        document.body.appendChild(VIDEO);
+        VIDEO.srcObject = stream;
+        
+        // Use loadedmetadata for a more robust start
+        VIDEO.onloadedmetadata = function () {
+            VIDEO.play();
+            updateCanvas();
+        };
+    } catch (err) {
+        alert("Camera error: " + err);
+    }
 }
+
 
 function updateCanvas() {
   CONTEXT.drawImage(VIDEO, 0, 0, CANVAS.width, CANVAS.height);
