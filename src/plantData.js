@@ -78,6 +78,9 @@ function displayPlant(data) {
     const img = document.getElementById("plant-image");
     img.src = data.images.title;
     img.style.display = "block";
+    if (typeof saveImage === 'function' && latinName) {
+      saveImage(latinName, data.images.title);
+    }
   }
 
   // Edibility

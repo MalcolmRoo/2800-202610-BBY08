@@ -44,7 +44,7 @@ body.camera-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-cream);
   text-decoration: none;
   transition: all 0.2s ease;
 }

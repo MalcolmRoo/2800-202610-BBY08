@@ -1,9 +1,22 @@
 // Name used to store favourites in localStorage
 const KEY = 'greenscan_favorites';
+// Name used to store cached plant images in localStorage
+const IMG_KEY = 'greenscan_fav_images';
+
 // Read and return the saved favourites list from localStorage
 const getFavs = () => JSON.parse(localStorage.getItem(KEY) || '[]');
 // Save the updated favourites list back to localStorage
 const saveFavs = (f) => localStorage.setItem(KEY, JSON.stringify(f));
+
+// Read cached plant images from localStorage
+const getImages = () => JSON.parse(localStorage.getItem(IMG_KEY) || '{}');
+// Save a plant image URL to localStorage cache
+const saveImage = (id, url) => {
+    const imgs = getImages();
+    imgs[id] = url;
+    localStorage.setItem(IMG_KEY, JSON.stringify(imgs));
+};
+
 // Check if a specific plant is already in the favourites list by its id
 const isFav = (id) => getFavs().some(p => p.id === id);
 
@@ -37,22 +50,51 @@ function initFavButton(plantId) {
     }));
 }
 
-// Get saved list from localStorage and display each plant as a card on the favourites page
-function renderFavoritesList() {
-    const listEl = document.getElementById('favorites-list');
+// Tag sets for plant cards (cycles through based on index)
+const TAG_SETS = [
+    ['Full Sun', 'Annual'],
+    ['Indoor', 'Low Water'],
+    ['Low Light', 'Tropical'],
+    ['Perennial', 'Air Purifying'],
+    ['Drought Tolerant'],
+    ['Fast Growth'],
+];
+
+// Retrieves saved plant data and cached images from local storage to render interactive cards.
+async function renderFavoritesList() {
+    const gridEl = document.getElementById('fav-grid');
     const emptyEl = document.getElementById('empty-state');
-    if (!listEl || !emptyEl) return;
+    const subEl = document.getElementById('fav-subtitle');
+    if (!gridEl || !emptyEl) return;
     const favs = getFavs();
-    listEl.classList.toggle('hidden', favs.length === 0);
+    const imgs = getImages();
+    gridEl.classList.toggle('hidden', favs.length === 0);
     emptyEl.classList.toggle('hidden', favs.length > 0);
-    listEl.innerHTML = favs.map(p => `
-        <div class="fav-item" onclick="window.location.href='/plant?name=${encodeURIComponent(p.commonName)}&latin=${encodeURIComponent(p.latinName)}&score=0'">
-            <div class="fav-info"><h3>${p.commonName}</h3><p>${p.latinName}</p></div>
-            <button class="fav-remove" onclick="event.stopPropagation();toggleFavorite({id:'${p.id}',commonName:'${p.commonName}',latinName:'${p.latinName}'});renderFavoritesList();">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            </button>
-        </div>`).join('');
+    if (subEl) {
+        subEl.textContent = favs.length === 0 ? 'Your saved plants' : `${favs.length} plant${favs.length !== 1 ? 's' : ''} saved`;
+    }
+
+    const cards = favs.map((p, i) => {
+        const tags = TAG_SETS[i % TAG_SETS.length];
+        const imageUrl = imgs[p.id] || null;
+        return `
+        <div class="fav-card" style="animation-delay: ${i * 0.08}s" onclick="window.location.href='/plant?name=${encodeURIComponent(p.commonName)}&latin=${encodeURIComponent(p.latinName)}&score=0'">
+            ${imageUrl ? `<div class="fav-card-img" style="background-image: url(${imageUrl})"></div>` : `<div class="fav-card-art"></div>`}
+            <div class="fav-card-name">${p.commonName}</div>
+            <div class="fav-card-latin">${p.latinName}</div>
+            <div class="fav-card-footer">
+                <div class="fav-card-tags">${tags.map(t => `<span class="fav-tag">${t}</span>`).join('')}</div>
+                <button class="fav-remove" onclick="event.stopPropagation();toggleFavorite({id:'${p.id}',commonName:'${p.commonName}',latinName:'${p.latinName}'});renderFavoritesList();">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>`;
+    });
+
+    gridEl.innerHTML = cards.join('');
 }
 
 // Automatically call renderFavoritesList when the favourites page loads
-if (document.getElementById('favorites-list')) renderFavoritesList();
+if (document.getElementById('fav-grid')) renderFavoritesList();
