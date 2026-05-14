@@ -73,6 +73,10 @@ function displayPlant(data) {
   const details = document.getElementById("plant-details");
   details.innerHTML = "";
 
+  //Assigning Local Data to variables
+  const isLocal = data.is_local;
+  const localData = data.local_data;
+
   // Plant image from Permapeople CDN — larger image below
   if (data.images?.title) {
     const img = document.getElementById("plant-image");
@@ -92,6 +96,7 @@ function displayPlant(data) {
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
+  
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
@@ -116,6 +121,8 @@ function displayPlant(data) {
   let edibilityContent = "";
   if (edibleParts)
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
+  else if(isLocal && localData.EdibleParts != "") //Local Database
+    edibilityContent += `<p> ${localData.EdibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
   if (!edibleParts && !edibleUses)
@@ -130,6 +137,9 @@ function displayPlant(data) {
     const paragraphs = description.split("\r\n\r\n").slice(0, 2).join(" ");
     howToContent += `<p>${paragraphs}</p>`;
   }
+  if(isLocal && localData.PreparationMethods != ""){
+    howToContent += `<p><strong>Preparation Methods:</strong> ${localData.PreparationMethods}</p>`;
+  }
   if (utility) howToContent += `<p><strong>Known Uses:</strong> ${utility}</p>`;
   addSection("How to Use", howToContent || null);
 
@@ -137,10 +147,18 @@ function displayPlant(data) {
   const warning = getField(d, "Warning");
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
-  if (warning) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if(warning && isLocal && localData.Warnings != "") //Local Database
+    hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
+  
   addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+
+  let extraNotes = "";
+  if(isLocal && localData.Notes != "")
+    extraNotes += `<p><strong>Additional Details:</strong> ${localData.Notes}`;
+  addSection("Extra Notes", extraNotes);
 
   // Plant Info
   const infoKeys = [

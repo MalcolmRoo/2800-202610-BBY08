@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GreenScan - Result</title>
     <link href="style.css" rel="stylesheet" />
@@ -56,7 +56,9 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.77l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.77l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+            />
           </svg>
         </button>
 
@@ -85,24 +87,58 @@
       <!-- Plant container — image and dynamic sections injected by plantData.js -->
       <div id="content-area">
         <div id="plant-image-container">
-          <img id="plant-image" src="" alt="Plant image" style="display: none" />
+          <img
+            id="plant-image"
+            src=""
+            alt="Plant image"
+            style="display: none"
+          />
         </div>
 
         <!-- All sections injected dynamically -->
         <div id="plant-details"></div>
 
         <!-- Scan another plant button -->
-        <button class="scan-another-btn" onclick="window.location.href = '/camera'">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
+        <button
+          class="scan-another-btn"
+          onclick="window.location.href = '/camera'"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+            />
+            <circle cx="12" cy="13" r="4" />
           </svg>
           <span>Scan Another Plant</span>
         </button>
       </div>
     </div>
+
+    <!-- Mushroom chat — appears 5 seconds after plant identified -->
+    <div id="mushroom-chat">
+      <div id="speech-bubble">Do you have questions about this plant? 🌿</div>
+      <button id="mushroom-btn" aria-label="Ask mushroom assistant">
+        <img
+          src="/tutorial_mascot.svg"
+          alt="Mushroom assistant"
+          width="65"
+          height="65"
+        />
+      </button>
+    </div>
+
     <script src="/favorites.js"></script>
     <script src="/share.js"></script>
     <script src="/plantData.js"></script>
+    <script src="/chat.js"></script>
   </body>
 </html>
