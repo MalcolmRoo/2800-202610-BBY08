@@ -7,13 +7,11 @@ const fetch = require("node-fetch").default;
 const FormData = require("form-data");
 const fs = require("fs");
 const csv = require("csv-parser");
-const {findPlantInCSV} = require('./src/csvParse');
+const { findPlantInCSV } = require("./src/csvParse");
 
 const app = express();
 const port = process.env.PORT || 3000;
 const upload = multer({ storage: multer.memoryStorage() });
-
-
 
 // middleware
 app.use(cors());
@@ -63,11 +61,9 @@ app.post("/api/identify", upload.single("image"), async (req, res) => {
 
       // Handle species not found specifically
       if (response.status === 404 || errorText.includes("Species not found")) {
-        return res
-          .status(404)
-          .json({
-            error: "Could not identify plant. Try with a clearer photo.",
-          });
+        return res.status(404).json({
+          error: "Could not identify plant. Try with a clearer photo.",
+        });
       }
 
       return res.status(response.status).json({ error: "PlantNet API error" });
@@ -122,7 +118,6 @@ app.post("/api/permapeople/search", async (req, res) => {
       },
       body: JSON.stringify({ q }),
     });
-    
 
     if (!response.ok) {
       const raw = await response.text();
@@ -152,8 +147,6 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
     });
 
     const raw = await response.text();
-    
-    
 
     // Parse JSON response safely
     try {
@@ -162,12 +155,12 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
       //checks local csv database for a match
       const name = data.name || "";
       const localInfo = await findPlantInCSV(name);
-      
+
       const finalData = {
         ...data,
         local_data: localInfo || null,
-        is_local: !!localInfo
-      }
+        is_local: !!localInfo,
+      };
 
       if (finalData.is_local && finalData.local_data.LookAlike?.trim() !== ""){
         finalData.trigger_warning = true;
@@ -187,7 +180,77 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
   }
 });
 
+// Groq AI chat route — receives plant context + user question, returns AI answer
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { plantName, latinName, question } = req.body;
+
+    // Validate inputs
+    if (!question || !plantName) {
+      return res.status(400).json({ error: "Missing plant name or question" });
+    }
+
+    const groqApiKey = process.env.GROQ_API_KEY;
+
+    // Build system prompt with plant context
+    // This tells the AI exactly what plant the user is asking about
+    // and restricts it to only answer plant-related questions
+    const systemPrompt = `You are a helpful plant assistant for GreenScan, an urban foraging app. 
+The user has just identified a plant: ${plantName} (${latinName}).
+Your job is to answer questions about this specific plant only.
+Topics you can help with: edibility, preparation methods, safety, foraging tips, medicinal uses, habitat.
+If asked anything unrelated to this plant or foraging, politely redirect the conversation back to the plant.
+Keep answers concise, clear and beginner-friendly. Make sure that the answers and stright to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
+try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.
+ `;
+
+    // Call Groq API
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: question },
+          ],
+          max_tokens: 300, // keep answers short and mobile friendly
+          temperature: 0.7,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[CHAT] Groq error:", errorText);
+      return res
+        .status(500)
+        .json({ error: "AI service unavailable. Try again." });
+    }
+
+    const data = await response.json();
+    const answer =
+      data.choices[0]?.message?.content || "Sorry I could not answer that.";
+
+    console.log("[CHAT] Question:", question);
+    console.log("[CHAT] Answer:", answer.substring(0, 100) + "...");
+
+    res.json({ answer });
+  } catch (err) {
+    console.error("[CHAT] ERROR:", err.message);
+    res.status(500).json({ error: "Server error: " + err.message });
+  }
+});
+
 // page routes — serve HTML files
+app.get("/chat", (req, res) => {
+  res.sendFile(path.join(__dirname, "chat.html"));
+});
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
