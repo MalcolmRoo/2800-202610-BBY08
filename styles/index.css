@@ -157,8 +157,8 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
     transform: translateX(-50%);
   }
   #Tutorial.stage-1 { /* Gear Icon Target */
-    top: 80px;
-    right: 20px;
+    top: 15%;
+    right: calc(50% - 380px);;
   }
   #Tutorial.stage-2 { /* Camera Button Target */
     top: 40%;
@@ -174,7 +174,7 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
   }
   #Tutorial.stage-5,
   #Tutorial.stage-6 { /* Information and End Warnings */
-    top: 50%;
+    top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
     max-width: 450px;
