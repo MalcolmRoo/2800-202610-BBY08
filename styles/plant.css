@@ -14,6 +14,8 @@
   --btn-bg: #3d5c22;
   --btn-border: rgba(149, 180, 106, 0.3);
   --glow: rgba(149, 180, 106, 0.08);
+  --text-cream: #e8f0d0;
+  --text-sage: rgba(200, 220, 160, 0.45);
 }
 
 body {
@@ -59,7 +61,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-cream);
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -77,7 +79,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-cream);
   cursor: pointer;
   transition: all 0.2s ease;
   pointer-events: auto !important;
@@ -102,7 +104,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-cream);
   cursor: pointer;
   transition: all 0.2s ease;
   pointer-events: auto !important;
@@ -122,7 +124,7 @@ body {
 #common-name {
   font-size: 36px;
   font-weight: 800;
-  color: white;
+  color: var(--text-cream);
   text-align: center;
   margin-bottom: 10px;
   line-height: 1.2;
@@ -130,7 +132,7 @@ body {
 
 #latin-name {
   font-style: italic;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-sage);
   font-size: 18px;
   margin-bottom: 28px;
 }
@@ -161,7 +163,7 @@ body {
 
 .stat-label {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-sage);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -216,7 +218,7 @@ body {
 }
 
 .info-card p {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-cream);
   font-size: 15px;
   line-height: 1.7;
 }
@@ -245,7 +247,7 @@ body {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  color: white;
+  color: var(--text-cream);
   font-weight: 700;
   font-size: 16px;
   box-shadow: 0 0 0 4px var(--glow);
