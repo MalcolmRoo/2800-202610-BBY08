@@ -93,8 +93,8 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 /* Individual element sizing */
 #startTutorial {
-  width: 80px;
-  height: auto;
+  /* width: 80px;
+  height: 80px; */
   background: none; 
   border: none; 
   cursor: pointer;
@@ -122,15 +122,21 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 /* Base Layout Configurations */
 #Tutorial {
   position: fixed;
-  background: darkkhaki;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  display: flex;
+  display: none;
   flex-direction: column;
-  padding: 12px;
-  max-width: 320px;
+  padding: 16px;
+  background-color: darkkhaki;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   z-index: 10000;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 90vw;
+  max-width: 340px;
+  transition: transform 0.4s ease, top 0.4s ease, left 0.4s ease;
+  
+  /* Centered initial positioning */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #Tutorial p {
@@ -150,34 +156,53 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 }
 
 /* --- DESKTOP POSITIONING LAYER (Widths 1024px and up) --- */
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   #Tutorial.stage-0 {
     top: 15%;
     left: 50%;
     transform: translateX(-50%);
   }
   #Tutorial.stage-1 { /* Gear Icon Target */
-    top: 15%;
-    right: calc(50% - 380px);;
+    top: 12%;
+    right: calc(33% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
   }
   #Tutorial.stage-2 { /* Camera Button Target */
-    top: 40%;
+    top: 50%;
     left: calc(50% - 380px); /* Safely offsets left of the central card stack */
   }
   #Tutorial.stage-3 { /* Upload Photo Target */
-    top: 55%;
+    top: 60%;
     left: calc(50% - 380px);
   }
   #Tutorial.stage-4 { /* Search Input Target */
     top: 68%;
-    right: calc(50% - 380px);
+    right: calc(35% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
   }
-  #Tutorial.stage-5,
-  #Tutorial.stage-6 { /* Information and End Warnings */
+  #Tutorial.stage-5 { /* Search Input Target */
+    top: 50%;
+    right: calc(35% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
+  }
+  #Tutorial.stage-6,
+  #Tutorial.stage-7 { /* Information and End Warnings */
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
     max-width: 450px;
+  }
+
+  #Tutorial.stage-4 #mascotImg,
+  #Tutorial.stage-5 #mascotImg { 
+    transform: translateX(375%); 
+  }
+  #Tutorial.stage-6 #mascotImg,
+  #Tutorial.stage-7 #mascotImg { 
+    transform: translateX(500%); 
   }
 }
 
@@ -191,42 +216,32 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
     max-width: 360px;
   }
   #Tutorial.stage-0 { top: 10%; }
-  #Tutorial.stage-1 { top: 75px; }   /* Positioned cleanly below header gear */
-  #Tutorial.stage-2 { top: 32%; }  /* Aligns step-by-step downwards over elements */
-  #Tutorial.stage-3 { top: 48%; }
-  #Tutorial.stage-4 { top: 62%; }
-  #Tutorial.stage-5,
-  #Tutorial.stage-6 {
+  #Tutorial.stage-1 { top: 8%; }   /* Positioned cleanly below header gear */
+  #Tutorial.stage-2 { top: 20%; }  /* Aligns step-by-step downwards over elements */
+  #Tutorial.stage-3 { top: 30%; }
+  #Tutorial.stage-4 { top: 50%; }
+  #Tutorial.stage-5 { top: 35%; }
+  #Tutorial.stage-6,
+  #Tutorial.stage-7 {
     top: 25%;
+  }
+  #Tutorial.stage-4 #mascotImg,
+  #Tutorial.stage-5 #mascotImg { 
+    transform: translateX(375%); 
+  }
+  #Tutorial.stage-6 #mascotImg,
+  #Tutorial.stage-7 #mascotImg { 
+    transform: translateX(385%); 
   }
 }
 
 /* Mascot Flip Modifier Adjustments */
-#mascot-img {
+#mascotImg {
+  height: 80px; 
+  width: 80px; 
+  position: absolute; 
+  transform: translateX(-65px);
   transition: transform 0.3s ease;
-}
-#mascot-img.stage-4 {
-  transform: scaleX(-1); /* Flips asset cleanly instead of using heavy pixel shifts */
-}
-
-
-#Tutorial {
-  position: fixed;
-  display: none;
-  flex-direction: column;
-  padding: 16px;
-  background-color: darkkhaki;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  z-index: 10000;
-  width: 90vw;
-  max-width: 340px;
-  transition: transform 0.4s ease, top 0.4s ease, left 0.4s ease;
-  
-  /* Centered initial positioning */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 #Tutorial textElement {

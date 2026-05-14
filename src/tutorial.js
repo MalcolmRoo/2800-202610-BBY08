@@ -29,7 +29,7 @@ nextButton.addEventListener("click", (event) => {
   
   // Wipe previous stage classes and apply the current one
   tutorial.className = `tutorial-popup stage-${stage}`;
-  mascotImg.className = `mascot-img stage-${stage}`;
+  mascotImg.className = `mascotImg stage-${stage}`;
 
   if (stage === 1) {
     textElement.textContent = "You can click on this little gear to change the settings!";
@@ -38,12 +38,14 @@ nextButton.addEventListener("click", (event) => {
   } else if (stage === 3) {
     textElement.textContent = "You can click on this button to upload a picture you've already taken; great for if you want to identify a plant you've seen before!";
   } else if (stage === 4) {
-    textElement.textContent = "You can click on this button to search by name; great for if you wanna know more about a plant you already know of!";
+    textElement.textContent = "You can use the search bar to enter the name of a plant to get information on it!";
   } else if (stage === 5) {
+    textElement.textContent = "You can click on this button to view any plant results that you have previously favourited!";
+  } else if (stage === 6) {
     textElement.textContent = "When Foraging always make sure you are taking a plant in small enough quantities to not harm the local ecosystem. When eating anything you forage it is a good idea to double check your find with multiple sources, use our identification as one of your sources and make sure to always double check the information you recieve. We do not take responsibility for what any user of our app does with the information provided, please forage responsibly.";
     nextButton.textContent = "I Agree";
-  } else if (stage === 6) {
-    textElement.textContent = "Please select how you would like to identify the plant from one of the buttons below!";
+  } else if (stage === 7) {
+    textElement.textContent = "Please select how you would like to identify the plant from one of the options below!";
     nextButton.style.display = "none";
   }
 });
