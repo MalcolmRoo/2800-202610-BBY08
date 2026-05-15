@@ -35,15 +35,16 @@ body.camera-page {
 }
 
 #back-btn {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
+  margin: 4px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-cream);
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -53,7 +54,7 @@ body.camera-page {
 }
 
 #top-bar h1 {
-  color: white;
+  color: var(--text-cream);
   font-size: 20px;
   font-weight: 600;
   margin: 0;
@@ -84,7 +85,7 @@ body.camera-page {
 }
 
 #hint {
-  color: white;
+  color: var(--text-cream);
   font-size: 15px;
   background: rgba(0, 0, 0, 0.5);
   padding: 10px 24px;

@@ -4,6 +4,7 @@ const commonName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
 
+
 // Fill in PlantNet data immediately on page load
 document.getElementById("common-name").textContent = commonName;
 document.getElementById("latin-name").textContent = latinName;
@@ -19,18 +20,22 @@ function getField(dataArray, key) {
 // Skips section entirely if no content provided
 function addSection(title, content, isHazard = false) {
   if (!content) return;
-  
-  let icon = '';
-  if (title === 'Edibility') {
-    icon = '<div class="card-icon-badge"><img src="/fork-and-knife.png" width="18" height="18" alt="edibility icon" /></div>';
-  } else if (title === 'How to Use') {
-    icon = '<div class="card-icon-badge"><img src="/mortar.png" width="18" height="18" alt="preparation icon" /></div>';
-  } else if (title === 'Known Hazards') {
-    icon = '<div class="card-icon-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>';
-  } else if (title === 'Plant Info') {
-    icon = '<div class="card-icon-badge"><img src="/information-button.png" width="18" height="18" alt="plant info icon" /></div>';
+
+  let icon = "";
+  if (title === "Edibility") {
+    icon =
+      '<div class="card-icon-badge"><img src="/fork-and-knife.png" width="18" height="18" alt="edibility icon" /></div>';
+  } else if (title === "How to Use") {
+    icon =
+      '<div class="card-icon-badge"><img src="/mortar.png" width="18" height="18" alt="preparation icon" /></div>';
+  } else if (title === "Known Hazards") {
+    icon =
+      '<div class="card-icon-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>';
+  } else if (title === "Plant Info") {
+    icon =
+      '<div class="card-icon-badge"><img src="/information-button.png" width="18" height="18" alt="plant info icon" /></div>';
   }
-  
+
   const section = document.createElement("div");
   section.className = isHazard ? "info-card hazard" : "info-card";
   section.innerHTML = `${icon}<h2>${title}</h2>${content}`;
@@ -56,6 +61,13 @@ async function fetchPermapeople(scientificName) {
     const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
     const data = await plantRes.json();
 
+    //If there is toxic look-alike a warning is applied
+    if (data.trigger_warning) {
+
+      renderWarning(data);
+    
+  };
+
     // Step 3 — display the data
     displayPlant(data);
   } catch (err) {
@@ -69,11 +81,18 @@ function displayPlant(data) {
   const details = document.getElementById("plant-details");
   details.innerHTML = "";
 
+  //Assigning Local Data to variables
+  const isLocal = data.is_local;
+  const localData = data.local_data;
+
   // Plant image from Permapeople CDN — larger image below
   if (data.images?.title) {
     const img = document.getElementById("plant-image");
     img.src = data.images.title;
     img.style.display = "block";
+    if (typeof saveImage === 'function' && latinName) {
+      saveImage(latinName, data.images.title);
+    }
   }
 
   // Edibility
@@ -85,6 +104,7 @@ function displayPlant(data) {
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
+  
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
@@ -109,6 +129,8 @@ function displayPlant(data) {
   let edibilityContent = "";
   if (edibleParts)
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
+  else if(isLocal && localData.EdibleParts != "") //Local Database
+    edibilityContent += `<p> ${localData.EdibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
   if (!edibleParts && !edibleUses)
@@ -123,6 +145,9 @@ function displayPlant(data) {
     const paragraphs = description.split("\r\n\r\n").slice(0, 2).join(" ");
     howToContent += `<p>${paragraphs}</p>`;
   }
+  if(isLocal && localData.PreparationMethods != ""){
+    howToContent += `<p><strong>Preparation Methods:</strong> ${localData.PreparationMethods}</p>`;
+  }
   if (utility) howToContent += `<p><strong>Known Uses:</strong> ${utility}</p>`;
   addSection("How to Use", howToContent || null);
 
@@ -130,10 +155,18 @@ function displayPlant(data) {
   const warning = getField(d, "Warning");
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
-  if (warning) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if(warning && isLocal && localData.Warnings != "") //Local Database
+    hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
+  
   addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+
+  let extraNotes = "";
+  if(isLocal && localData.Notes != "")
+    extraNotes += `<p><strong>Additional Details:</strong> ${localData.Notes}`;
+  addSection("Extra Notes", extraNotes);
 
   // Plant Info
   const infoKeys = [
@@ -147,6 +180,14 @@ function displayPlant(data) {
     "Leaves",
     "Medicinal",
   ];
+
+  // Special alert for Apiaceae family, which includes deadly plants like poison hemlock
+    const family = getField(d, "Family");
+    if (family.toLowerCase().includes("apiaceae")) {
+      const risk = document.querySelector(".risk");
+      risk.style.display = "flex";
+    }
+
   let infoContent = "";
   infoKeys.forEach((key) => {
     const val = getField(d, key);
@@ -157,9 +198,97 @@ function displayPlant(data) {
     }
   });
   addSection("Plant Info", infoContent || null);
+
+  // Permapeople link — data.link is the plant's path returned by Permapeople
+  if (data.link) {
+    const linkSection = document.createElement("div");
+    linkSection.className = "info-card";
+    linkSection.innerHTML = `
+    <h2>Learn More</h2>
+    <a href="https://permapeople.org${data.link}" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       style="color: var(--accent); font-size: 15px;">
+      View full plant profile on Permapeople →
+    </a>
+  `;
+    document.getElementById("plant-details").appendChild(linkSection);
+  }
 }
 
 // Kick off Permapeople fetch using latin name from PlantNet
 if (latinName) {
   fetchPermapeople(latinName);
 }
+
+// Initialize favorite button after plant is loaded
+if (typeof initFavButton === 'function') {
+  initFavButton(latinName || commonName);
+}
+
+async function renderWarning(data) {
+  const local = data.local_data;
+    const overlay = document.getElementById('warning-overlay');
+    const warnId = document.getElementById('identify-text');
+    const safeName = document.getElementById('safe-name');
+    const deadlyName = document.getElementById('deadly-name');
+    const safeTip = document.getElementById('safe-tip');
+    const deadlyTip = document.getElementById('deadly-tip');
+    const safeImg = document.getElementById('safe-img');
+    const deadlyImg = document.getElementById('deadly-img');
+
+    // Inject the data into the tags
+    warnId.innerText = "You have Identified " + local.PlantName + " there is a toxic look-alike that could be FATAL if consumed.";
+
+    safeName.innerText = local.PlantName;
+    deadlyName.innerText = local.LookAlike;
+
+    safeImg.src = data.images.title;
+
+    const lookAlikeImg = await fetchlookAlikeImg(local.lookAlikeInfo.ScientificName);
+    deadlyImg.src = lookAlikeImg;
+    
+    safeTip.innerText = local.Identification;
+    deadlyTip.innerText = local.lookAlikeInfo.Identification;
+
+    // Show the overlay by changing the style
+    overlay.style.display = 'flex';
+    
+
+    //close button
+    document.getElementById('proceed-btn').onclick = () => {
+        overlay.style.display = 'none';
+    };
+
+    document.getElementById('cancel-btn').onclick = () => {
+      window.location.href = '/';
+    }
+}
+
+async function fetchlookAlikeImg (scientificName) {
+   try {
+    // Step 1 — search Permapeople by scientific name
+    const searchRes = await fetch("/api/permapeople/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: scientificName }),
+    });
+
+    const searchData = await searchRes.json();
+    const first = searchData.plants?.[0];
+
+    if (!first) return;
+
+    // Step 2 — fetch full plant details using ID from search
+    const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
+    const data = await plantRes.json();
+
+    return data.images.title;
+
+} catch(err) {
+console.error("Permapeople error:", err);
+}
+}
+
+
+
