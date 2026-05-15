@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenScan – Settings</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/settings.css" />
+    <link rel="stylesheet" href="/global.css" />
+  </head>
+
+  <body>
+    <!-- Background + Bokeh -->
+    <div class="bokeh-bg">
+      <div class="bokeh bokeh-1"></div>
+      <div class="bokeh bokeh-2"></div>
+      <div class="bokeh bokeh-3"></div>
+      <div class="bokeh bokeh-4"></div>
+    </div>
+
+    <!-- Watermark -->
+    <div class="watermark">
+      <svg width="300" height="300" viewBox="0 0 200 200" fill="none">
+        <path
+          d="M100 20C60 20 30 50 30 90C30 130 60 160 100 180C140 160 170 130 170 90C170 50 140 20 100 20"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.08"
+        />
+        <path
+          d="M100 40C70 40 50 60 50 90C50 120 70 140 100 160"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.06"
+        />
+        <circle
+          cx="100"
+          cy="50"
+          r="8"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.05"
+        />
+        <circle
+          cx="80"
+          cy="80"
+          r="5"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.04"
+        />
+        <circle
+          cx="120"
+          cy="70"
+          r="6"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.05"
+        />
+        <path
+          d="M70 120 Q85 100 100 110 Q115 100 130 120"
+          stroke="#3E5622"
+          stroke-width="0.5"
+          opacity="0.04"
+        />
+      </svg>
+    </div>
+
+    <!-- Logo -->
+    <div class="app-logo">
+      <div class="logo-icon">
+        <img src="/gear.png" alt="Settings Gear Icon" class="logo-img" />
+      </div>
+    </div>
+
+    <!-- TITLE -->
+    <h1>Settings</h1>
+
+    <!-- Settings Panel -->
+    <div class="settings-container">
+      <!-- Dark Mode -->
+      <div class="setting-item">
+        <label class="toggle" for="darkModeToggle">
+          <input type="checkbox" id="darkModeToggle" />
+          <span class="slider"></span>
+          <span class="label-text">Dark Mode</span>
+        </label>
+      </div>
+
+      <!-- Large Text -->
+      <div class="setting-item">
+        <label class="toggle" for="largeTextToggle">
+          <input type="checkbox" id="largeTextToggle" />
+          <span class="slider"></span>
+          <span class="label-text">Large Text</span>
+        </label>
+      </div>
+
+      <!-- High Contrast -->
+      <div class="setting-item">
+        <label class="toggle" for="highContrastToggle">
+          <input type="checkbox" id="highContrastToggle" />
+          <span class="slider"></span>
+          <span class="label-text">High Contrast</span>
+        </label>
+      </div>
+
+      <!-- Color Blind Mode -->
+      <div class="setting-item">
+        <label class="toggle" for="colorBlindToggle">
+          <input type="checkbox" id="colorBlindToggle" />
+          <span class="slider"></span>
+          <span class="label-text">Color Blind Mode</span>
+        </label>
+      </div>
+
+      <!-- Confidence Slider -->
+      <div class="setting-item">
+        <label for="confidenceSlider">Confidence Threshold:</label><br />
+        <input type="range" id="confidenceSlider" min="0" max="1" step="0.01" />
+        <span id="confidenceValue"></span>
+      </div>
+
+      <!-- Back to Home -->
+      <a href="/" class="home-link">Back to Home</a>
+    </div>
+
+    <!-- JS -->
+    <script src="/global.js"></script>
+    <script type="module" src="/settings.js"></script>
+  </body>
+</html>
