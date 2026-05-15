@@ -76,13 +76,237 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 .row .card { flex: 1; }
 
-#Mascot { position: absolute; z-index: 20; top: 78%; right: 20px; font-size: 28px; color: var(--olive-dark); opacity: 0.7; }
+/* Container for the tutorial mascot and speech bubble */
+#Mascot {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  /* Desktop position: Bottom Right */
+  bottom: 20px;
+  right: 20px;
+  top: auto;
+  left: auto;
+}
 
-#startTutorial { background: none; border: none; cursor: pointer; }
+/* Individual element sizing */
+#startTutorial {
+  /* width: 80px;
+  height: 80px; */
+  background: none; 
+  border: none; 
+  cursor: pointer;
+}
 
+#messageBox {
+  max-width: 150px;
+  width: 120px; 
+  height: 72px; 
+  background: darkkhaki; 
+  border-radius: 5px;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 679px) {
+  #Mascot {
+    /* Mobile position: Top Left */
+    top: 20px;
+    left: 20px;
+    bottom: auto;
+    right: auto;
+  }
+}
+
+/* Base Layout Configurations */
 #Tutorial {
-  background-color: #fff; display: none; box-sizing: border-box; width: 320px;
-  border-radius: 20px; position: fixed; transform: translate(1rem, -20rem);
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  padding: 16px;
+  background-color: darkkhaki;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 10000;
+  width: 90vw;
+  max-width: 340px;
+  transition: transform 0.4s ease, top 0.4s ease, left 0.4s ease;
+  
+  /* Centered initial positioning */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#Tutorial p {
+  margin: 12px;
+  padding: 3px;
+  color: cornsilk;
+}
+
+#Tutorial button {
+  padding: 10px;
+  background: darkolivegreen;
+  border-radius: 8px;
+  color: darkkhaki;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+/* --- DESKTOP POSITIONING LAYER (Widths 1024px and up) --- */
+@media (min-width: 1200px) {
+  #Tutorial.stage-0 {
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #Tutorial.stage-1 { /* Gear Icon Target */
+    top: 12%;
+    right: calc(33% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
+  }
+  #Tutorial.stage-2 { /* Camera Button Target */
+    top: 50%;
+    left: calc(50% - 380px); /* Safely offsets left of the central card stack */
+  }
+  #Tutorial.stage-3 { /* Upload Photo Target */
+    top: 60%;
+    left: calc(50% - 380px);
+  }
+  #Tutorial.stage-4 { /* Search Input Target */
+    top: 68%;
+    right: calc(35% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
+  }
+  #Tutorial.stage-5 { /* Search Input Target */
+    top: 50%;
+    right: calc(35% - 380px);
+    left: auto; /* ADD THIS */
+    transform: none;
+  }
+  #Tutorial.stage-6,
+  #Tutorial.stage-7 { /* Information and End Warnings */
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 450px;
+  }
+
+  #Tutorial.stage-4 #mascotImg,
+  #Tutorial.stage-5 #mascotImg { 
+    transform: translateX(375%); 
+  }
+  #Tutorial.stage-6 #mascotImg,
+  #Tutorial.stage-7 #mascotImg { 
+    transform: translateX(500%); 
+  }
+}
+
+/* --- MOBILE POSITIONING LAYER (Widths below 1024px) --- */
+@media (max-width: 1023px) {
+  #Tutorial {
+    /* Anchors mobile elements consistently across phone widths */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 360px;
+  }
+  #Tutorial.stage-0 { top: 10%; }
+  #Tutorial.stage-1 { top: 8%; }   /* Positioned cleanly below header gear */
+  #Tutorial.stage-2 { top: 20%; }  /* Aligns step-by-step downwards over elements */
+  #Tutorial.stage-3 { top: 30%; }
+  #Tutorial.stage-4 { top: 50%; }
+  #Tutorial.stage-5 { top: 35%; }
+  #Tutorial.stage-6,
+  #Tutorial.stage-7 {
+    top: 25%;
+  }
+  #Tutorial.stage-4 #mascotImg,
+  #Tutorial.stage-5 #mascotImg { 
+    transform: translateX(375%); 
+  }
+  #Tutorial.stage-6 #mascotImg,
+  #Tutorial.stage-7 #mascotImg { 
+    transform: translateX(385%); 
+  }
+}
+
+/* Mascot Flip Modifier Adjustments */
+#mascotImg {
+  height: 80px; 
+  width: 80px; 
+  position: absolute; 
+  transform: translateX(-65px);
+  transition: transform 0.3s ease;
+}
+
+#Tutorial textElement {
+  margin: 12px;
+  padding: 3px;
+  color: cornsilk;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+#Tutorial nextButton {
+  padding: 10px 20px;
+  align-self: flex-end; /* Clean button alignment instead of margin-left rules */
+  background-color: darkolivegreen;
+  border-radius: 8px;
+  color: darkkhaki;
+  border: none;
+  cursor: pointer;
+}
+
+#Tutorial-stage-0{
+  background-color: #fff; 
+  box-sizing: border-box; 
+  width: 320px;
+  border-radius: 20px; 
+  position: fixed; 
+  transform: translate(1rem, -20rem);
+}
+
+#Tutorial[data-screen="desktop"] {
+  /* Resets standard center positioning so we can place coordinates from top/left */
+  top: 0; 
+  left: 0;
+  transform: none;
+}
+
+#Tutorial[data-screen="desktop"][data-stage="1"] { top: 80px; left: calc(100vw - 380px); }  /* Top Right Gear */
+#Tutorial[data-screen="desktop"][data-stage="2"] { top: 38%; left: calc(50vw - 420px); }  /* Left side of Camera Button */
+#Tutorial[data-screen="desktop"][data-stage="3"] { top: 52%; left: calc(50vw - 420px); }  /* Left side of Upload Button */
+#Tutorial[data-screen="desktop"][data-stage="4"] { top: 52%; left: calc(50vw + 80px); }   /* Right side of Favourites Button */
+#Tutorial[data-screen="desktop"][data-stage="5"] { top: 50%; left: 50%; transform: translate(-50%, -50%); } /* Center Disclaimer */
+#Tutorial[data-screen="desktop"][data-stage="6"] { top: 20%; left: 50%; transform: translateX(-50%); }     /* Top Center Final Info */
+
+#Tutorial[data-screen="mobile"] {
+  /* Keep centered horizontally on mobile screens, adjustments shift vertically */
+  left: 50%;
+  transform: translateX(-50%);
+  top: auto;
+}
+
+#Tutorial[data-screen="mobile"][data-stage="1"] { top: 85px; }    /* Below top-right header zone */
+#Tutorial[data-screen="mobile"][data-stage="2"] { bottom: 62%; } /* Directly above the main actions container */
+#Tutorial[data-screen="mobile"][data-stage="3"] { bottom: 15%; } /* Below center actions, above input box */
+#Tutorial[data-screen="mobile"][data-stage="4"] { bottom: 5%; }  /* Lower screen overlay */
+#Tutorial[data-screen="mobile"][data-stage="5"] { top: 50%; transform: translate(-50%, -50%); } /* Safe center */
+#Tutorial[data-screen="mobile"][data-stage="6"] { top: 15%; }    /* Clear layout top */
+
+/* Mascot reposition adjustments per stage */
+#mascotImg { transition: transform 0.3s ease; }
+#Tutorial[data-screen="desktop"][data-stage="4"] ~ #mascotImg { transform: translateX(305px); }
+#Tutorial[data-screen="desktop"][data-stage="5"] ~ #mascotImg { transform: translateX(-65px); }
+
+
+#Tutorial[data-stage="5"] {
+  max-width: 500px; /* Gives the long disclaimer text more room to breathe */
 }
 
 .search-bar {
