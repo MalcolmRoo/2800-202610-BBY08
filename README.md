@@ -42,7 +42,7 @@ GreenScan is an app designed to help you understand and learn about foraging. It
 │   ├── search.css             # Styles text search results page
 │   ├── settings.css           # Styles settings page
 │   ├── style.css              # Collects all the stylesheets together
-│   └── warning.css
+│   └── warning.css            # Stles toxic lookalike warning message
 ├── .gitignore                 # Gitignore
 ├── 404.html                   # 404 page
 ├── about_us.html              # About us page
@@ -78,10 +78,8 @@ This project is available under the [Creative Commons Attribution-ShareAlike 4.0
 
 
 ## The Team
-- Malcolm Roosdahl : 
+- Malcolm Roosdahl :
 - Zach Mosdell : 
 - Veerpartap Singh Kahlon :
 - Shaan Puar : 
 - Xi Yao : 
-
-
