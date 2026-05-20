@@ -298,7 +298,15 @@ app.post('/loginSubmit', async(req, res) => {
     return;
   }
 
-  const result = await userCollection.find({email: email}).project({username: 1, email: 1, password: 1, favorites: 1, settings: 1, _id: 1}).toArray();
+  const result = await userCollection.find({email: email}).project(
+    {
+      username: 1, 
+      email: 1, 
+      password: 1, 
+      favorites: 1, 
+      settings: 1,
+       _id: 1
+      }).toArray();
 
   if(result.length != 1){
     //what to do if no user found
@@ -341,7 +349,14 @@ app.post('/signUpSubmit', async(req, res) => {
     }
 
     var hashedPassword = bcrypt.hashSync(password, saltRounds);
-    await userCollection.insertOne({username: username, email: email, password: hashedPassword, favorites:[], settings:[]});
+    await userCollection.insertOne(
+      {
+        username: username, 
+        email: email, 
+        password: hashedPassword, 
+        favorites:[], 
+        settings:{}
+      });
 
     req.session.authenticated = true;
     req.session.username = username;
@@ -349,6 +364,21 @@ app.post('/signUpSubmit', async(req, res) => {
 
     res.redirect('/');
     return;
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+  return;
+});
+
+//check login status
+app.get("/api/auth-status", (req, res) => {
+    // Checks if a session exists and has a username attached
+    if (req.session && req.session.username) {
+        return res.json({ loggedIn: true, username: req.session.username });
+    }
+    res.json({ loggedIn: false });
 });
 
 // Fetch all favorites for a user from MongoDB
@@ -416,6 +446,48 @@ app.delete("/user/favorites/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to remove favorite" });
   }
 });
+
+//Fetch a user's cloud configurations
+app.get("/user/settings", async (req, res) => {
+  try {
+    const username = req.session.username || "guest_user"; // Hook into active account
+    const user = await userCollection.findOne({ username: username });
+    
+    if (!user || !user.settings) {
+      return res.json({});
+    }
+    res.json(user.settings);
+  } catch (err) {
+    console.error("Failed to read settings from DB:", err);
+    res.status(500).json({ error: "Database read failure" });
+  }
+});
+
+// Update cloud configuration key pairs dynamically
+app.post("/user/settings", express.json(), async (req, res) => {
+  try {
+    const userId = req.session.username || "guest_user";
+    const { key, value } = req.body;
+
+    if (!key) {
+      return res.status(400).json({ error: "Missing setting key" });
+    }
+
+    // Uses dot-notation to dynamically target and update exactly one setting key pair
+    await userCollection.updateOne(
+      { $set: { [`settings.${key}`]: value } },
+      { upsert: true }
+    );
+
+    res.json({ success: true });
+
+    
+  } catch (err) {
+    console.error("Failed to write settings to DB:", err);
+    res.status(500).json({ error: "Database write failure" });
+  }
+});
+
 
 
 // page routes — serve HTML files
