@@ -65,3 +65,44 @@ const capture = document.getElementById('capture-card');
 const upload = document.getElementById('upload-card');
 const fav = document.getElementById('favourites-card');
 const search = document.getElementById('search-bar');
+
+let mushroomClicks = 0;
+
+const mushroom = document.getElementById("mascotImg");
+const mushroomWrap = document.getElementById("mascotShakeWrap");
+
+// check if tutorial was completed
+//if (localStorage.getItem("tutorialComplete") === "true") {
+
+    mushroom.addEventListener("click", () => {
+        mushroomClicks++;
+         mushroomWrap.classList.add("mushroom-shake");
+
+        setTimeout(() => {
+          mushroomWrap.classList.remove("mushroom-shake");
+        }, 350);
+
+        if (mushroomClicks === 10) {
+            textElement.textContent = "🍄 Ouch!";
+        }
+
+        if (mushroomClicks === 15) {
+            textElement.textContent = "Okay seriously stop poking me.";
+        }
+
+        if (mushroomClicks === 20) {
+            textElement.textContent = "This is why mushrooms grow in dark places.";
+        }
+        if (mushroomClicks === 25) {
+          textElement.textContent = "Touch grass instead.";
+        }
+        if (mushroomClicks === 30) {
+          textElement.textContent = "I’m filing a harassment report.";
+        }
+        if (mushroomClicks === 35) {
+          textElement.textContent = "Achievement unlocked: Fungus Menace.";
+          mushroom.classList.add("angry");
+        }
+    });
+
+//}
