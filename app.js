@@ -1,5 +1,12 @@
+require('node:dns/promises').setServers(['1.1.1.1', '8.8.8.8']);
+
 require("dotenv").config();
 const express = require("express");
+const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
+const bcrypt = require('bcrypt');
+const saltRounds = 12;
+const Joi = require('joi');
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
@@ -11,11 +18,26 @@ const { findPlantInCSV } = require("./src/csvParse");
 
 const app = express();
 const port = process.env.PORT || 3000;
+const expireTime = 24 * 60 * 60 * 1000;
 const upload = multer({ storage: multer.memoryStorage() });
+
+//User Database Keys
+const mongodb_host = process.env.HOST;
+const mongodb_user = process.env.USER;
+const mongodb_password = process.env.DATABASE_PASS;
+const mongodb_session_database = process.env.SESSION_DB;
+const mongodb_user_database = process.env.USER_DB;
+
+const node_session_secret = process.env.NODE_SECRET;
+
+const {database} = require('./src/databaseConnection');
+const userCollection = database.db(mongodb_user_database).collection('users');
+
 
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // test route — confirm server is running
 app.get("/api/test", (req, res) => {
@@ -247,6 +269,85 @@ try to give short and concise answers, if the answer is too long try to summariz
   }
 });
 
+var mongoStore = MongoStore.create({
+  mongoUrl:`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
+  crypto: {
+    secret: process.env.MONGO_SESSION_SECRET
+  }
+});
+
+app.use(session({
+    secret: node_session_secret,
+    store: mongoStore,
+    saveUninitialized: false,
+    resave: true
+}));
+
+app.post('/loginSubmit', async(req, res) => {
+  var email = req.body.email;
+  var password = req.body.password;
+  
+  const schema = Joi.string().max(20).required();
+  const validationResult = schema.validate(email);
+
+  if(validationResult.error != null) {
+    console.log(validationResult.error);
+    res.redirect('/login');
+    return;
+  }
+
+  const result = await userCollection.find({email: email}.project({username: 1, email: 1, password: 1, favourites: 1, settings: 1, _id: 1})).toArray();
+
+  if(result.length != 1){
+    //what to do if no user found
+    console.log("no user found");
+    return;
+  }
+
+  if(await bcrypt.compare(password, result[0].password)){
+    req.session.authenticated = true;
+    req.session.username = result[0].username;
+    erq.session.cookie.maxAge = expireTime;
+
+    res.redirect('/');
+    return;
+  } else {
+    // what to do if pass is wrong
+    console.log("pass is wrong");
+    return;
+  }
+});
+
+app.post('/signUpSubmit', async(req, res) => {
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+
+    const schema = Joi.object({
+      username: Joi.string().alphanum().max(35).required(),
+      email: Joi.string().max(45).required(),
+      password: Joi.string().max(20).required()
+    });
+
+    const validationResult = schema.validate({username, email, password});
+
+    if(validationResult.error != null){
+        console.log(validationResult.error);
+        res.redirect('/login');
+        return;
+    }
+
+    var hashedPassword = bcrypt.hashSync(password, saltRounds);
+    await userCollection.insertOne({username: username, email: email, password: hashedPassword, favourites:[], settings:[]});
+
+    req.session.authenticated = true;
+    req.session.username = username;
+    req.session.cookie.maxAge = expireTime;
+
+    res.redirect('/');
+    return;
+});
+
 // page routes — serve HTML files
 app.get("/chat", (req, res) => {
   res.sendFile(path.join(__dirname, "chat.html"));
@@ -268,6 +369,9 @@ app.get("/favorites", (req, res) => {
 });
 app.get("/settings", (req, res) => {
   res.sendFile(path.join(__dirname, "settings.html"));
+});
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "login.html"));
 });
 
 // static files AFTER routes — styles, src scripts, and public assets
