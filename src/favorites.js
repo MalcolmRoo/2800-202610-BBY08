@@ -4,51 +4,164 @@ const KEY = 'greenscan_favorites';
 const IMG_KEY = 'greenscan_fav_images';
 
 // Read and return the saved favourites list from localStorage
-const getFavs = () => JSON.parse(localStorage.getItem(KEY) || '[]');
+const getLocalFavs = () => JSON.parse(localStorage.getItem(KEY) || '[]');
 // Save the updated favourites list back to localStorage
-const saveFavs = (f) => localStorage.setItem(KEY, JSON.stringify(f));
+const saveLocalFavs = (f) => localStorage.setItem(KEY, JSON.stringify(f));
 
 // Read cached plant images from localStorage
-const getImages = () => JSON.parse(localStorage.getItem(IMG_KEY) || '{}');
+const getLocalImages = () => JSON.parse(localStorage.getItem(IMG_KEY) || '{}');
 // Save a plant image URL to localStorage cache
-const saveImage = (id, url) => {
-    const imgs = getImages();
-    imgs[id] = url;
+const saveLocalImage = (id, url) => {
+    const imgs = getLocalImages();
+    if (url === null) {
+        delete imgs[id];
+    } else {
+        imgs[id] = url;
+    }
     localStorage.setItem(IMG_KEY, JSON.stringify(imgs));
 };
+//Gets favorites from database
+const getDbFavs = async () => {
+    try{
+        const response = await fetch('/user/favorites');
+        if(!response.ok) return [];
+        return await response.json();
+    } catch (err) {
+        console.errror("Failed to fetch DB favourites:", err);
+        return [];
+    }
+}
+// combine local and database into one array
+const getUnifiedFavs = async () => {
+    const localFavs = getLocalFavs();
+    const dbFavs = await getDbFavs();
+    const localImgs = getLocalImages();
 
-// Check if a specific plant is already in the favourites list by its id
-const isFav = (id) => getFavs().some(p => p.id === id);
+    const normalizedDB = dbFavs.map(p => ({
+        id: p.id,
+        commonName: p.commonName,
+        savedAt: p.savedAt,
+        imageUrl: p.imageUrl || null
+    }));
 
-// checks list if there remove if not there add it
-function toggleFavorite({ id, commonName, latinName }) {
-    const favs = getFavs();
-    const exists = favs.findIndex(p => p.id === id);
-    exists >= 0 ? favs.splice(exists, 1) : favs.push({ id, commonName, latinName, savedAt: new Date().toISOString() });
-    saveFavs(favs);
-    updateFavButton(id);
+    const normalizedLocal = localFavs.map(p => ({
+        ...p,
+        imageUrl: localImgs[p.id] || null
+    }));
+
+    const combined = [...normalizedLocal, ...normalizedDB];
+
+    const uniqueMap = new Map();
+    combined.forEach(plant => {
+        if(!uniqueMap.has(plant.id)) {
+            uniqueMap.set(plant.id, plant);
+        }
+    });
+
+    return Array.from(uniqueMap.values());
 }
 
+// Check if a specific plant is already in the favourites list by its id
+const isFav = async (id) => {
+    const favs = await getUnifiedFavs();
+    return favs.some(p => p.id === id);
+};
+
+
+// Functionality from hitting the <3 favorite button, adding or removing the favorite as necessary
+async function toggleFavorite({ id, commonName, latinName, imageUrl = null }) {
+    try {
+        if (!id) {
+            console.error("Cannot toggle favorite: Missing plant ID.");
+            return;
+        }
+
+        const localFavs = getLocalFavs();
+        const localExistsIndex = localFavs.findIndex(p => p.id === id);
+        const dbFavs = await getDbFavs();
+        const dbExists = dbFavs.some(p => p.id === id);
+        
+        // If imageUrl wasn't passed directly, fall back to checking local storage
+        if (!imageUrl) {
+            const allImages = getLocalImages();
+            imageUrl = allImages[id] || null;
+        }
+
+        if (localExistsIndex >= 0 || dbExists) {
+            // REMOVE PROCESS 
+            if (localExistsIndex >= 0) {
+                localFavs.splice(localExistsIndex, 1);
+                saveLocalFavs(localFavs);
+            }
+            saveLocalImage(id, null);
+
+            // Database Removal
+            await fetch(`/user/favorites/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                .catch(err => console.error(err));
+        } else {
+            // Process
+            const newPlant = { id, commonName, latinName: latinName || '', savedAt: new Date().toISOString() };
+            
+            // Local Storage Save
+            localFavs.push(newPlant);
+            saveLocalFavs(localFavs);
+            
+            
+            if (imageUrl) {
+                saveLocalImage(id, imageUrl);
+            }
+
+            //Save to database
+            await fetch('/user/favorites', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...newPlant, imageUrl: imageUrl })
+            }).catch(err => console.error(err));
+        }
+
+        await updateFavButton(id);
+    } catch (err) {
+        console.error("Error executing toggleFavorite:", err);
+    }
+}
+
+
+
 // Update the heart button appearance based on whether the plant is favorited
-function updateFavButton(id) {
+async function updateFavButton(id) {
     const btn = document.getElementById('fav-btn');
     if (!btn) return;
-    const active = isFav(id);
+    const active = await isFav(id);
     btn.classList.toggle('active', active);
     btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="${active ? '#95B46A' : 'none'}" stroke="${active ? '#95B46A' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.77l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
 }
 
-// Listen for heart button click and tell toggleFavorite when to run
-function initFavButton(plantId) {
+// Listen for heart button click and pass the image URL directly from the page layout
+async function initFavButton(plantId, plantLatin) {
     const btn = document.getElementById('fav-btn');
     if (!btn) return;
-    updateFavButton(plantId);
-    btn.addEventListener('click', () => toggleFavorite({
-        id: plantId,
-        commonName: document.getElementById('common-name')?.textContent || 'Unknown',
-        latinName: document.getElementById('latin-name')?.textContent || ''
-    }));
+    
+    await updateFavButton(plantId);
+    
+    btn.addEventListener('click', () => {
+        // FIXED: Extract the active URL string straight from the <img> element src attribute
+        const imgElement = document.getElementById('plant-image');
+        let currentImgUrl = null;
+        
+        if (imgElement && imgElement.src && !imgElement.src.endsWith('/')) {
+            currentImgUrl = imgElement.src;
+        }
+
+        toggleFavorite({
+            id: plantId,
+            commonName: document.getElementById('common-name')?.textContent || 'Unknown',
+            latinName: plantLatin || document.getElementById('latin-name')?.textContent || '',
+            imageUrl: currentImgUrl // Directly passed down into database payload
+        });
+    });
 }
+
+
 
 // Tag sets for plant cards (cycles through based on index)
 const TAG_SETS = [
@@ -66,17 +179,21 @@ async function renderFavoritesList() {
     const emptyEl = document.getElementById('empty-state');
     const subEl = document.getElementById('fav-subtitle');
     if (!gridEl || !emptyEl) return;
-    const favs = getFavs();
-    const imgs = getImages();
+    const favs = await getUnifiedFavs();
+    
+
+    
     gridEl.classList.toggle('hidden', favs.length === 0);
     emptyEl.classList.toggle('hidden', favs.length > 0);
     if (subEl) {
         subEl.textContent = favs.length === 0 ? 'Your saved plants' : `${favs.length} plant${favs.length !== 1 ? 's' : ''} saved`;
+        
     }
 
     const cards = favs.map((p, i) => {
         const tags = TAG_SETS[i % TAG_SETS.length];
-        const imageUrl = imgs[p.id] || null;
+        const imageUrl = p.imageUrl || null;
+
         return `
         <div class="fav-card" style="animation-delay: ${i * 0.08}s" onclick="window.location.href='/plant?name=${encodeURIComponent(p.commonName)}&latin=${encodeURIComponent(p.latinName)}&score=0'">
             ${imageUrl ? `<div class="fav-card-img" style="background-image: url(${imageUrl})"></div>` : `<div class="fav-card-art"></div>`}

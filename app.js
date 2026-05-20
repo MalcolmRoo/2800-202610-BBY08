@@ -1,5 +1,12 @@
+require('node:dns/promises').setServers(['1.1.1.1', '8.8.8.8']);
+
 require("dotenv").config();
 const express = require("express");
+const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
+const bcrypt = require('bcrypt');
+const saltRounds = 12;
+const Joi = require('joi');
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
@@ -11,11 +18,26 @@ const { findPlantInCSV } = require("./src/csvParse");
 
 const app = express();
 const port = process.env.PORT || 3000;
+const expireTime = 24 * 60 * 60 * 1000;
 const upload = multer({ storage: multer.memoryStorage() });
+
+//User Database Keys
+const mongodb_host = process.env.HOST;
+const mongodb_user = process.env.USER;
+const mongodb_password = process.env.DATABASE_PASS;
+const mongodb_session_database = process.env.SESSION_DB;
+const mongodb_user_database = process.env.USER_DB;
+
+const node_session_secret = process.env.NODE_SECRET;
+
+const {database} = require('./src/databaseConnection');
+const userCollection = database.db(mongodb_user_database).collection('users');
+
 
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // test route — confirm server is running
 app.get("/api/test", (req, res) => {
@@ -247,6 +269,227 @@ try to give short and concise answers, if the answer is too long try to summariz
   }
 });
 
+//Connect to Database
+var mongoStore = MongoStore.create({
+  mongoUrl:`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
+  crypto: {
+    secret: process.env.MONGO_SESSION_SECRET
+  }
+});
+
+app.use(session({
+    secret: node_session_secret,
+    store: mongoStore,
+    saveUninitialized: false,
+    resave: true
+}));
+
+//Check Database for user and compare password if passes login
+app.post('/loginSubmit', async(req, res) => {
+  var email = req.body.email;
+  var password = req.body.password;
+  
+  const schema = Joi.string().max(20).required();
+  const validationResult = schema.validate(email);
+
+  if(validationResult.error != null) {
+    console.log(validationResult.error);
+    res.redirect('/login');
+    return;
+  }
+
+  const result = await userCollection.find({email: email}).project(
+    {
+      username: 1, 
+      email: 1, 
+      password: 1, 
+      favorites: 1, 
+      settings: 1,
+       _id: 1
+      }).toArray();
+
+  if(result.length != 1){
+    //what to do if no user found
+    console.log("no user found");
+    return;
+  }
+
+  if(await bcrypt.compare(password, result[0].password)){
+    req.session.authenticated = true;
+    req.session.username = result[0].username;
+    req.session.cookie.maxAge = expireTime;
+
+    res.redirect('/');
+    return;
+  } else {
+    // what to do if pass is wrong
+    console.log("pass is wrong");
+    return;
+  }
+});
+
+//Create a new user in the database
+app.post('/signUpSubmit', async(req, res) => {
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+
+    const schema = Joi.object({
+      username: Joi.string().alphanum().max(35).required(),
+      email: Joi.string().max(45).required(),
+      password: Joi.string().max(20).required()
+    });
+
+    const validationResult = schema.validate({username, email, password});
+
+    if(validationResult.error != null){
+        console.log(validationResult.error);
+        res.redirect('/login');
+        return;
+    }
+
+    var hashedPassword = bcrypt.hashSync(password, saltRounds);
+    await userCollection.insertOne(
+      {
+        username: username, 
+        email: email, 
+        password: hashedPassword, 
+        favorites:[], 
+        settings:{}
+      });
+
+    req.session.authenticated = true;
+    req.session.username = username;
+    req.session.cookie.maxAge = expireTime;
+
+    res.redirect('/');
+    return;
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+  return;
+});
+
+//check login status
+app.get("/api/auth-status", (req, res) => {
+    // Checks if a session exists and has a username attached
+    if (req.session && req.session.username) {
+        return res.json({ loggedIn: true, username: req.session.username });
+    }
+    res.json({ loggedIn: false });
+});
+
+// Fetch all favorites for a user from MongoDB
+app.get("/user/favorites", async (req, res) => {
+  try {
+    // Note: If you implement login sessions later, replace 'guest_user' with req.session.user_id
+    const userId = req.session.username; 
+    
+    const user = await userCollection.findOne({ username: userId });
+    if (!user || !user.favorites) {
+      return res.json([]);
+    }
+    res.json(user.favorites);
+  } catch (err) {
+    console.error("Error fetching favorites from DB:", err);
+    res.status(500).json({ error: "Failed to fetch database favorites" });
+  }
+});
+
+//Save a plant to the database favorites array
+app.post("/user/favorites", express.json(), async (req, res) => {
+  try {
+    const userId = req.session.username;
+    const { id, commonName, latinName, savedAt, imageUrl } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing plant id in request payload" });
+    }
+
+    const newFavorite = { id, commonName, latinName, savedAt, imageUrl };
+
+    // Update the document by pushing the new favorite into the array if it doesn't already exist
+    await userCollection.updateOne(
+      { username: userId },
+      { $addToSet: { favorites: newFavorite } },
+      { upsert: true } // Creates the user document if it doesn't exist yet
+    );
+
+    res.status(200).json({ success: true, message: "Favorite saved to database" });
+  } catch (err) {
+    console.error("Error saving favorite to DB:", err);
+    res.status(500).json({ error: "Failed to save favorite" });
+  }
+});
+
+// Remove a plant from the database favorites array by its ID
+app.delete("/user/favorites/:id", async (req, res) => {
+  try {
+    const userId = req.session.username;
+    const plantId = decodeURIComponent(req.params.id);
+
+    if (!plantId) {
+      return res.status(400).json({ error: "Missing plant id parameter" });
+    }
+
+    // Pull the item matching the unique plant ID out of the favorites array
+    await userCollection.updateOne(
+      { username: userId },
+      { $pull: { favorites: { id: plantId } } }
+    );
+
+    res.status(200).json({ success: true, message: "Favorite removed from database" });
+  } catch (err) {
+    console.error("Error removing favorite from DB:", err);
+    res.status(500).json({ error: "Failed to remove favorite" });
+  }
+});
+
+//Fetch a user's cloud configurations
+app.get("/user/settings", async (req, res) => {
+  try {
+    const username = req.session.username || "guest_user"; // Hook into active account
+    const user = await userCollection.findOne({ username: username });
+    
+    if (!user || !user.settings) {
+      return res.json({});
+    }
+    res.json(user.settings);
+  } catch (err) {
+    console.error("Failed to read settings from DB:", err);
+    res.status(500).json({ error: "Database read failure" });
+  }
+});
+
+// Update cloud configuration key pairs dynamically
+app.post("/user/settings", express.json(), async (req, res) => {
+  try {
+    const userId = req.session.username || "guest_user";
+    const { key, value } = req.body;
+
+    if (!key) {
+      return res.status(400).json({ error: "Missing setting key" });
+    }
+
+    // Uses dot-notation to dynamically target and update exactly one setting key pair
+    await userCollection.updateOne(
+      { $set: { [`settings.${key}`]: value } },
+      { upsert: true }
+    );
+
+    res.json({ success: true });
+
+    
+  } catch (err) {
+    console.error("Failed to write settings to DB:", err);
+    res.status(500).json({ error: "Database write failure" });
+  }
+});
+
+
+
 // page routes — serve HTML files
 app.get("/chat", (req, res) => {
   res.sendFile(path.join(__dirname, "chat.html"));
@@ -268,6 +511,9 @@ app.get("/favorites", (req, res) => {
 });
 app.get("/settings", (req, res) => {
   res.sendFile(path.join(__dirname, "settings.html"));
+});
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "login.html"));
 });
 
 // static files AFTER routes — styles, src scripts, and public assets
