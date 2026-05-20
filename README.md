@@ -4,10 +4,27 @@
 GreenScan is an app designed to help you understand and learn about foraging. It allows you to quickly search for information about the plants around you—whether you are in your backyard, at a local park, or on a hike. It is perfect for anyone looking to supplement their daily food budget or for curious gourmands. GreenScan supports plant searches using both photos and text. Whether you are a new or experienced forager, our goal is to make identifying edible plants easier than ever.
 
 ## Tech Stack
+- **HTML5**: Front End
+- **CSS3**: Front End
+- **JavaScript**: Front and Back End
 - **GitHub**: Project Repository
 - **Render**: Web Hosting
 - **PlantNet**: Plant image identification API
 - **PermaPeople**: Plant database API
+- **Groq**: AI chatbot
+- **Node.js & Express.js**: Back end server and routing
+- **MongoDB**: User database
+
+## Features Implemented
+- **Plant image identification**
+- **Camera & image upload support**
+- **AI-powered plant assistant**
+- **Toxicity and lookalike warnings**
+- **Favorites system**
+- **Plant search functionality**
+- **Share functionality**
+- **Local caching**
+- **Responsive mobile-first UI**
 
 ## File Structure
 ```
@@ -72,6 +89,7 @@ Visit this link for the most recent stable release: [GreenScan](https://two800-2
 ## AI and API Credits
 - **Plant Data**: We utilize the database and API provided by [PermaPeople](https://permapeople.org/), which is licensed under the Creative Commons Attribution 4.0 License.
 - **Image Identification**: We use the [Pl@ntNet API](https://plantnet.org/en/) to process and identify plants through images.
+-**AI chatbot**: AI Assistant powered by Groq API and large language models for conversational plant guidance, care recommendations, and user support.
 
 ## Licenses
 This project is available under the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) license.
@@ -79,7 +97,7 @@ This project is available under the [Creative Commons Attribution-ShareAlike 4.0
 
 ## The Team
 - Malcolm Roosdahl :
-- Zach Mosdell : 
+- Zach Mosdell : zmosdell@my.bcit.ca
 - Veerpartap Singh Kahlon :
 - Shaan Puar : 
 - Xi Yao : 
