@@ -216,6 +216,6 @@ async function renderFavoritesList() {
 // Automatically call renderFavoritesList when the favourites page loads
 if (document.getElementById('fav-grid')) renderFavoritesList();
 
-if (getFavs().length >= 10) {
+if (getLocalFavs().length >= 10 || getDbFavs.length >= 10) {
     document.getElementById('badge').style.display = "block";
 }
