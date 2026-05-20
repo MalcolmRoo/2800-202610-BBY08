@@ -269,6 +269,7 @@ try to give short and concise answers, if the answer is too long try to summariz
   }
 });
 
+//Connect to Database
 var mongoStore = MongoStore.create({
   mongoUrl:`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
   crypto: {
@@ -283,6 +284,7 @@ app.use(session({
     resave: true
 }));
 
+//Check Database for user and compare password if passes login
 app.post('/loginSubmit', async(req, res) => {
   var email = req.body.email;
   var password = req.body.password;
@@ -296,7 +298,7 @@ app.post('/loginSubmit', async(req, res) => {
     return;
   }
 
-  const result = await userCollection.find({email: email}.project({username: 1, email: 1, password: 1, favourites: 1, settings: 1, _id: 1})).toArray();
+  const result = await userCollection.find({email: email}).project({username: 1, email: 1, password: 1, favorites: 1, settings: 1, _id: 1}).toArray();
 
   if(result.length != 1){
     //what to do if no user found
@@ -307,7 +309,7 @@ app.post('/loginSubmit', async(req, res) => {
   if(await bcrypt.compare(password, result[0].password)){
     req.session.authenticated = true;
     req.session.username = result[0].username;
-    erq.session.cookie.maxAge = expireTime;
+    req.session.cookie.maxAge = expireTime;
 
     res.redirect('/');
     return;
@@ -318,6 +320,7 @@ app.post('/loginSubmit', async(req, res) => {
   }
 });
 
+//Create a new user in the database
 app.post('/signUpSubmit', async(req, res) => {
     var username = req.body.username;
     var email = req.body.email;
@@ -338,7 +341,7 @@ app.post('/signUpSubmit', async(req, res) => {
     }
 
     var hashedPassword = bcrypt.hashSync(password, saltRounds);
-    await userCollection.insertOne({username: username, email: email, password: hashedPassword, favourites:[], settings:[]});
+    await userCollection.insertOne({username: username, email: email, password: hashedPassword, favorites:[], settings:[]});
 
     req.session.authenticated = true;
     req.session.username = username;
@@ -347,6 +350,73 @@ app.post('/signUpSubmit', async(req, res) => {
     res.redirect('/');
     return;
 });
+
+// Fetch all favorites for a user from MongoDB
+app.get("/user/favorites", async (req, res) => {
+  try {
+    // Note: If you implement login sessions later, replace 'guest_user' with req.session.user_id
+    const userId = req.session.username; 
+    
+    const user = await userCollection.findOne({ username: userId });
+    if (!user || !user.favorites) {
+      return res.json([]);
+    }
+    res.json(user.favorites);
+  } catch (err) {
+    console.error("Error fetching favorites from DB:", err);
+    res.status(500).json({ error: "Failed to fetch database favorites" });
+  }
+});
+
+//Save a plant to the database favorites array
+app.post("/user/favorites", express.json(), async (req, res) => {
+  try {
+    const userId = req.session.username;
+    const { id, commonName, latinName, savedAt, imageUrl } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing plant id in request payload" });
+    }
+
+    const newFavorite = { id, commonName, latinName, savedAt, imageUrl };
+
+    // Update the document by pushing the new favorite into the array if it doesn't already exist
+    await userCollection.updateOne(
+      { username: userId },
+      { $addToSet: { favorites: newFavorite } },
+      { upsert: true } // Creates the user document if it doesn't exist yet
+    );
+
+    res.status(200).json({ success: true, message: "Favorite saved to database" });
+  } catch (err) {
+    console.error("Error saving favorite to DB:", err);
+    res.status(500).json({ error: "Failed to save favorite" });
+  }
+});
+
+// Remove a plant from the database favorites array by its ID
+app.delete("/user/favorites/:id", async (req, res) => {
+  try {
+    const userId = req.session.username;
+    const plantId = decodeURIComponent(req.params.id);
+
+    if (!plantId) {
+      return res.status(400).json({ error: "Missing plant id parameter" });
+    }
+
+    // Pull the item matching the unique plant ID out of the favorites array
+    await userCollection.updateOne(
+      { username: userId },
+      { $pull: { favorites: { id: plantId } } }
+    );
+
+    res.status(200).json({ success: true, message: "Favorite removed from database" });
+  } catch (err) {
+    console.error("Error removing favorite from DB:", err);
+    res.status(500).json({ error: "Failed to remove favorite" });
+  }
+});
+
 
 // page routes — serve HTML files
 app.get("/chat", (req, res) => {
