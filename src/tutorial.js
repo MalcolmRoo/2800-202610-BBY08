@@ -71,8 +71,6 @@ let mushroomClicks = 0;
 const mushroom = document.getElementById("mascotImg");
 const mushroomWrap = document.getElementById("mascotShakeWrap");
 
-// check if tutorial was completed
-//if (localStorage.getItem("tutorialComplete") === "true") {
 
     mushroom.addEventListener("click", () => {
         mushroomClicks++;
