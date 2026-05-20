@@ -92,3 +92,10 @@ body {
   .fav-card-img, .fav-card-art { height: 80px; }
   .fav-card-name { font-size: 14px; }
 }
+
+
+#badge {
+  width: 150px;
+  display: none;
+  margin: 0 auto;
+}

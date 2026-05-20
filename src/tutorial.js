@@ -33,15 +33,25 @@ nextButton.addEventListener("click", (event) => {
 
   if (stage === 1) {
     textElement.textContent = "You can click on this little gear to change the settings!";
+    settings.style.boxShadow = "0 0 20px rgba(255, 255, 255, 0.61)";
   } else if (stage === 2) {
+    settings.style.boxShadow = "none";
     textElement.textContent = "You can click on this button to use your device's camera to take a picture of the plant in question; great for if you have the plant in front of you!";
+    capture.style.boxShadow = "0 0 20px rgba(255, 255, 255, 0.61)";
   } else if (stage === 3) {
+    capture.style.boxShadow = "none";
     textElement.textContent = "You can click on this button to upload a picture you've already taken; great for if you want to identify a plant you've seen before!";
+    upload.style.boxShadow = "0 0 20px rgba(255, 255, 255, 0.61)";
   } else if (stage === 4) {
+    upload.style.boxShadow = "none";
     textElement.textContent = "You can use the search bar to enter the name of a plant to get information on it!";
+    search.style.boxShadow = "0 0 20px rgba(255, 255, 255, 0.61)";
   } else if (stage === 5) {
+    search.style.boxShadow = "none";
     textElement.textContent = "You can click on this button to view any plant results that you have previously favourited!";
+    fav.style.boxShadow = "0 0 20px rgba(255, 255, 255, 0.61)";
   } else if (stage === 6) {
+    fav.style.boxShadow = "none";
     textElement.textContent = "When Foraging always make sure you are taking a plant in small enough quantities to not harm the local ecosystem. When eating anything you forage it is a good idea to double check your find with multiple sources, use our identification as one of your sources and make sure to always double check the information you recieve. We do not take responsibility for what any user of our app does with the information provided, please forage responsibly.";
     nextButton.textContent = "I Agree";
   } else if (stage === 7) {
@@ -49,3 +59,9 @@ nextButton.addEventListener("click", (event) => {
     nextButton.style.display = "none";
   }
 });
+
+const settings = document.getElementById('settings');
+const capture = document.getElementById('capture-card');
+const upload = document.getElementById('upload-card');
+const fav = document.getElementById('favourites-card');
+const search = document.getElementById('search-bar');

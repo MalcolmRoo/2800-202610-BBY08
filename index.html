@@ -72,7 +72,7 @@
     </svg>
   </div>
 
-<a href="/settings" class="settings">⚙️</a>
+<a href="/settings" class="settings" id="settings">⚙️</a>
   <div class="app-logo">
     <div class="logo-icon">
       <img src="/logo.png" alt="Logo" class="logo-img" />
@@ -83,7 +83,7 @@
   <p class="app-desc">Identify any plant instantly</p>
   <div class="cards">
     <div class="card-1">
-      <a href="/camera" class="card primary">
+      <a href="/camera" class="card primary" id="capture-card">
         <div class="btn-layers">
           <div class="btn-inner"></div>
         </div>
@@ -99,7 +99,7 @@
       </a>
     </div>
     <div class="row">
-      <label for="fileInput" class="card mint" style="cursor: pointer;">
+      <label for="fileInput" class="card mint" style="cursor: pointer;" id="upload-card">
         <svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -119,7 +119,7 @@
         <small>Your saved plants</small>
       </a>
     </div>
-<form action="/search" method="get" class="search-bar">
+<form action="/search" method="get" class="search-bar" id="search-bar">
       <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2">
         <circle cx="11" cy="11" r="8" />
