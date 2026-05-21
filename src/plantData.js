@@ -4,6 +4,7 @@ const commonName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
 
+
 // Fill in PlantNet data immediately on page load
 document.getElementById("common-name").textContent = commonName;
 document.getElementById("latin-name").textContent = latinName;
@@ -99,8 +100,10 @@ async function fetchPermapeople(scientificName) {
 
     //If there is toxic look-alike a warning is applied
     if (data.trigger_warning) {
+
       renderWarning(data);
-    }
+
+    };
 
     // Step 3 — display the data
     displayPlant(data);
@@ -119,12 +122,14 @@ function displayPlant(data) {
   const isLocal = data.is_local;
   const localData = data.local_data;
 
-  // Plant image from Permapeople CDN — larger image below
+  // Plant image from Permapeople CDN — as hero panel background
   if (data.images?.title) {
-    const img = document.getElementById("plant-image");
-    img.src = data.images.title;
-    img.style.display = "block";
-    if (typeof saveImage === "function" && latinName) {
+    const heroPanel = document.getElementById("hero-panel");
+    heroPanel.style.backgroundImage = `url(${data.images.title})`;
+    // Also set on #plant-image so initFavButton can read it
+    const plantImg = document.getElementById('plant-image');
+    if (plantImg) plantImg.src = data.images.title;
+    if (typeof saveImage === 'function' && latinName) {
       saveImage(latinName, data.images.title);
     }
   }
@@ -135,18 +140,7 @@ function displayPlant(data) {
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
 
-  // 🔥 EDIBLE‑ONLY MODE FILTER
-  const edibleOnly = JSON.parse(localStorage.getItem("edibleOnly")) || false;
-
-  if (edibleOnly && !isEdible) {
-    document.getElementById("plant-details").innerHTML = `
-    <div class="info-card hazard">
-      <h2>Filtered Out</h2>
-      <p>This plant is toxic and has been removed because Edible‑Only Mode is ON.</p>
-    </div>
-  `;
-    return;
-  }
+  
 
   const isEdibleFlag =
     edibleRaw?.toLowerCase() === "true" ||
@@ -159,12 +153,25 @@ function displayPlant(data) {
     String(edibleParts).trim() !== "";
 
   const isEdible = isEdibleFlag || hasEdibleParts;
-
+  
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
-  // const plantIcon = document.getElementById("plant-icon");
-  // const plantLabel = document.getElementById("plant-label");
+  const plantIcon = document.getElementById("plant-icon");
+  const plantLabel = document.getElementById("plant-label");
+
+   // 🔥 EDIBLE‑ONLY MODE FILTER
+  const edibleOnly = JSON.parse(localStorage.getItem("edibleOnly")) || false;
+
+  if (edibleOnly && !isEdible) {
+    document.getElementById("plant-details").innerHTML = `
+    <div class="info-card hazard">
+      <h2>Filtered Out</h2>
+      <p>This plant is toxic and has been removed because Edible‑Only Mode is ON.</p>
+    </div>
+  `;
+    return;
+  }
 
   if (isEdible) {
     statusEl.textContent = "Safe";
@@ -176,16 +183,15 @@ function displayPlant(data) {
     statusEl.className = "stat-value danger"; // red color
     edibleEl.textContent = "No";
     edibleEl.className = "stat-value danger"; // red color
-    // plantIcon.classList.add("danger"); // red circle border
-    // plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
+    plantIcon.classList.add("danger"); // red circle border
+    plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
   }
 
   // Edible parts and uses only — badge already shown in stats bar
   let edibilityContent = "";
   if (edibleParts)
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
-  else if (isLocal && localData.EdibleParts != "")
-    //Local Database
+  else if (isLocal && localData.EdibleParts != "") //Local Database
     edibilityContent += `<p> ${localData.EdibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
@@ -211,15 +217,13 @@ function displayPlant(data) {
   const warning = getField(d, "Warning");
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
-  if (warning && !isLocal)
-    hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
-  if (warning && isLocal && localData.Warnings != "")
-    //Local Database
+  if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
+  if(isLocal && localData.Warnings != "") //Local Database
     hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
 
-  addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+  addSection("Known Hazards", hazardContent || null); // isHazard = true
 
   let extraNotes = "";
   if (isLocal && localData.Notes != "")
@@ -280,56 +284,54 @@ if (latinName) {
 }
 
 // Initialize favorite button after plant is loaded
-if (typeof initFavButton === "function") {
+if (typeof initFavButton === 'function') {
   initFavButton(latinName || commonName);
 }
 
+//If plant has a toxic look-alike a warning will take over the screen
 async function renderWarning(data) {
   const local = data.local_data;
-  const overlay = document.getElementById("warning-overlay");
-  const warnId = document.getElementById("identify-text");
-  const safeName = document.getElementById("safe-name");
-  const deadlyName = document.getElementById("deadly-name");
-  const safeTip = document.getElementById("safe-tip");
-  const deadlyTip = document.getElementById("deadly-tip");
-  const safeImg = document.getElementById("safe-img");
-  const deadlyImg = document.getElementById("deadly-img");
+  const overlay = document.getElementById('warning-overlay');
+  const warnId = document.getElementById('identify-text');
+  const safeName = document.getElementById('safe-name');
+  const deadlyName = document.getElementById('deadly-name');
+  const safeTip = document.getElementById('safe-tip');
+  const deadlyTip = document.getElementById('deadly-tip');
+  const safeImg = document.getElementById('safe-img');
+  const deadlyImg = document.getElementById('deadly-img');
 
   // Inject the data into the tags
-  warnId.innerText =
-    "You have Identified " +
-    local.PlantName +
-    " there is a toxic look-alike that could be FATAL if consumed.";
+  warnId.innerText = "You have Identified " + local.PlantName + " there is a toxic look-alike that could be FATAL if consumed.";
 
   safeName.innerText = local.PlantName;
   deadlyName.innerText = local.LookAlike;
 
   safeImg.src = data.images.title;
-
-  const lookAlikeImg = await fetchlookAlikeImg(
-    local.lookAlikeInfo.ScientificName,
-  );
+  //new fetch for comparison image
+  const lookAlikeImg = await fetchlookAlikeImg(local.lookAlikeInfo.ScientificName);
   deadlyImg.src = lookAlikeImg;
 
   safeTip.innerText = local.Identification;
   deadlyTip.innerText = local.lookAlikeInfo.Identification;
 
   // Show the overlay by changing the style
-  overlay.style.display = "flex";
+  overlay.style.display = 'flex';
+
 
   //close button
-  document.getElementById("proceed-btn").onclick = () => {
-    overlay.style.display = "none";
+  document.getElementById('proceed-btn').onclick = () => {
+    overlay.style.display = 'none';
   };
-
-  document.getElementById("cancel-btn").onclick = () => {
-    window.location.href = "/";
-  };
+  //return to home if user is unsure
+  document.getElementById('cancel-btn').onclick = () => {
+    window.location.href = '/';
+  }
 }
 
+//toxic plant image fetch using permapeople
 async function fetchlookAlikeImg(scientificName) {
   try {
-    // Step 1 — search Permapeople by scientific name
+    //search Permapeople by scientific name
     const searchRes = await fetch("/api/permapeople/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -341,11 +343,12 @@ async function fetchlookAlikeImg(scientificName) {
 
     if (!first) return;
 
-    // Step 2 — fetch full plant details using ID from search
+    //fetch full plant details using ID from search
     const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
     const data = await plantRes.json();
 
     return data.images.title;
+
   } catch (err) {
     console.error("Permapeople error:", err);
   }

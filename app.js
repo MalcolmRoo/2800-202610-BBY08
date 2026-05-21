@@ -339,8 +339,9 @@ ${disease ? `Important: This plant may be affected by ${disease}. Be ready to an
 Your job is to answer questions about this specific plant only.
 Topics you can help with: edibility, preparation methods, safety, foraging tips, medicinal uses, habitat.
 If asked anything unrelated to this plant or foraging, politely redirect the conversation back to the plant.
-Keep answers concise, clear and beginner-friendly. Make sure that the answers and stright to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
-try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.`;
+Keep answers concise, clear and beginner-friendly. Make sure that the answers and straight to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
+try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.
+ `;
 
     // Call Groq API
     const response = await fetch(
@@ -416,17 +417,15 @@ app.post("/loginSubmit", async (req, res) => {
     return;
   }
 
-  const result = await userCollection
-    .find({ email: email })
-    .project({
+  const result = await userCollection.find({ email: email }).project(
+    {
       username: 1,
       email: 1,
       password: 1,
       favorites: 1,
       settings: 1,
-      _id: 1,
-    })
-    .toArray();
+      _id: 1
+    }).toArray();
 
   if (result.length != 1) {
     //what to do if no user found

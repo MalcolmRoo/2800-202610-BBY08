@@ -132,30 +132,8 @@ body.camera-page {
   background: #e0e0e0;
 }
 
-#loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-#loading-overlay.visible {
-  display: flex;
-  opacity: 1;
-}
-
-#loading-overlay .spinner {
-  transform: scale(1.2);
-}
-
-#loading-overlay p {
-  color: #fff;
-  font-size: 16px;
-  margin-top: 16px;
-}
+/* Camera overlay overrides global loading-overlay */
+#loading-overlay { background: rgba(0, 0, 0, 0.85); opacity: 0; transition: opacity 0.3s ease; }
+#loading-overlay.visible { opacity: 1; }
+#loading-overlay .spinner { transform: scale(1.2); }
+#loading-overlay p { color: #fff; font-size: 16px; margin-top: 16px; }

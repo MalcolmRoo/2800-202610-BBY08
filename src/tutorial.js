@@ -6,27 +6,33 @@ var textElement = document.createElement("p");
 var mascot = document.getElementById("Mascot");
 var mascotImg = document.getElementById("mascotImg");
 
+const settings = document.getElementById('settings');
+const capture = document.getElementById('capture-card');
+const upload = document.getElementById('upload-card');
+const fav = document.getElementById('favourites-card');
+const search = document.getElementById('search-bar');
+
 let stage = 0;
 
 // Step 0: Initializing the welcome bubble
 tutorialButton.addEventListener("click", (event) => {
   tutorial.style.display = "flex"; // Changed to flex for proper centering
-  tutorial.className = "tutorial-popup stage-0"; 
-  
+  tutorial.className = "tutorial-popup stage-0";
+
   textElement.textContent = "Welcome to GreenScan! Let me show you around the place!";
   nextButton.textContent = "Next";
   nextButton.style.display = "inline-block";
 
   infoContainer.appendChild(textElement);
   infoContainer.appendChild(nextButton);
-  
+
   mascot.style.display = "none";
 });
 
 // Stepping through the stages
 nextButton.addEventListener("click", (event) => {
   stage++;
-  
+
   // Wipe previous stage classes and apply the current one
   tutorial.className = `tutorial-popup stage-${stage}`;
   mascotImg.className = `mascotImg stage-${stage}`;
@@ -60,11 +66,7 @@ nextButton.addEventListener("click", (event) => {
   }
 });
 
-const settings = document.getElementById('settings');
-const capture = document.getElementById('capture-card');
-const upload = document.getElementById('upload-card');
-const fav = document.getElementById('favourites-card');
-const search = document.getElementById('search-bar');
+
 
 let mushroomClicks = 0;
 
@@ -72,35 +74,35 @@ const mushroom = document.getElementById("mascotImg");
 const mushroomWrap = document.getElementById("mascotShakeWrap");
 
 
-    mushroom.addEventListener("click", () => {
-        mushroomClicks++;
-         mushroomWrap.classList.add("mushroom-shake");
+mushroom.addEventListener("click", () => {
+  mushroomClicks++;
+  mushroomWrap.classList.add("mushroom-shake");
 
-        setTimeout(() => {
-          mushroomWrap.classList.remove("mushroom-shake");
-        }, 350);
+  setTimeout(() => {
+    mushroomWrap.classList.remove("mushroom-shake");
+  }, 350);
 
-        if (mushroomClicks === 10) {
-            textElement.textContent = "🍄 Ouch!";
-        }
+  if (mushroomClicks === 10) {
+    textElement.textContent = "🍄 Ouch!";
+  }
 
-        if (mushroomClicks === 15) {
-            textElement.textContent = "Okay seriously stop poking me.";
-        }
+  if (mushroomClicks === 15) {
+    textElement.textContent = "Okay seriously stop poking me.";
+  }
 
-        if (mushroomClicks === 20) {
-            textElement.textContent = "This is why mushrooms grow in dark places.";
-        }
-        if (mushroomClicks === 25) {
-          textElement.textContent = "Touch grass instead.";
-        }
-        if (mushroomClicks === 30) {
-          textElement.textContent = "I’m filing a harassment report.";
-        }
-        if (mushroomClicks === 35) {
-          textElement.textContent = "Achievement unlocked: Fungus Menace.";
-          mushroom.classList.add("angry");
-        }
-    });
+  if (mushroomClicks === 20) {
+    textElement.textContent = "This is why mushrooms grow in dark places.";
+  }
+  if (mushroomClicks === 25) {
+    textElement.textContent = "Touch grass instead.";
+  }
+  if (mushroomClicks === 30) {
+    textElement.textContent = "I’m filing a harassment report.";
+  }
+  if (mushroomClicks === 35) {
+    textElement.textContent = "Achievement unlocked: Fungus Menace.";
+    mushroom.classList.add("angry");
+  }
+});
 
 //}

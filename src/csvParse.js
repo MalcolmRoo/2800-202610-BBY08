@@ -13,20 +13,20 @@ async function findPlantInCSV(searchTerm) {
             const common = (row['PlantName'] || '').toLowerCase().trim();
             const scientific = (row['ScientificName'] || '').toLowerCase().trim();
 
-            if(common === query || scientific === query) {
+            if (common === query || scientific === query) {
                 isResolved = true;
                 // match = row;
                 stream.destroy();
                 resolve(row);
             }
         })
-        .on('close', () => {
-            if (!isResolved) {
-                resolve(null);
-            }
-        })
-        .on('error', (err) => reject(err));
+            .on('close', () => {
+                if (!isResolved) {
+                    resolve(null);
+                }
+            })
+            .on('error', (err) => reject(err));
     })
 }
 
-module.exports = {findPlantInCSV};
+module.exports = { findPlantInCSV };

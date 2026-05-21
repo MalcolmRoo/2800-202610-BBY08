@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-let selectedOrgan = "leaf";
+let selectedOrgan = "auto";
 
 async function sendToPlantNet(imageBlob) {
   // ⭐ Reset override for new scan
