@@ -21,23 +21,44 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   function applySettings() {
     // Dark Mode
-    if (loadSetting("darkMode", false)) {
+    const darkValue = loadSetting("darkMode", false);
+    if (darkValue) {
       document.body.classList.add("dark");
     }
 
+    const darkToggle = document.getElementById("darkModeToggle");
+    if (darkToggle) {
+      darkToggle.checked = darkValue;
+    }
+
     // Large Text
-    if (loadSetting("largeText", false)) {
+    const largeToggle = document.getElementById("largeTextToggle");
+    const largeValue = loadSetting("largeText", false);
+    if (largeValue) {
       document.body.classList.add("large-text");
+    }
+    if (largeToggle) {
+      largeToggle.checked = largeValue;
     }
 
     // High Contrast
-    if (loadSetting("highContrast", false)) {
+    const contrastToggle = document.getElementById("highContrastToggle");
+    const contrastValue = loadSetting("highContrast", false);
+    if (contrastValue) {
       document.body.classList.add("high-contrast");
+    }
+    if (contrastToggle) {
+      contrastToggle.checked = contrastValue;
     }
 
     // Color Blind Mode
-    if (loadSetting("colorBlind", false)) {
+    const colorBlindToggle = document.getElementById("colorBlindToggle");
+    const colorBlindValue = loadSetting("colorBlind", false);
+    if (colorBlindValue) {
       document.body.classList.add("color-blind");
+    }
+    if (colorBlindToggle) {
+      colorBlindToggle.checked = colorBlindValue;
     }
 
     // Confidence Slider
