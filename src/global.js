@@ -30,12 +30,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------
-  // APPLY CONFIDENCE VALUE (OPTIONAL)
+  // APPLY CONFIDENCE VALUE
   // -----------------------------
   const confidenceValue = loadSetting("confidence", null);
   const confidenceDisplay = document.getElementById("confidenceValue");
   if (confidenceDisplay && confidenceValue !== null) {
     confidenceDisplay.textContent = confidenceValue;
+  }
+
+  // -----------------------------
+  // APPLY EDIBLE‑ONLY MODE (minimal addition)
+  // -----------------------------
+  const edibleOnly = loadSetting("edibleOnly", false);
+  const edibleDisplay = document.getElementById("edibleOnlyValue");
+  if (edibleDisplay) {
+    edibleDisplay.textContent = edibleOnly ? "On" : "Off";
   }
 
   // -----------------------------

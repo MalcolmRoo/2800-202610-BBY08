@@ -1,38 +1,46 @@
-body{
-    background-image: url(/dendelions.png);
-    background-repeat: no-repeat;
-    background-position-y: bottom;
-    background-position-x: left;
+body {
+  background-image: url(/dendelions.png);
+  background-repeat: no-repeat;
+  background-position-y: bottom;
+  background-position-x: left;
 }
 
 .plant-result {
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    margin-block:0.5em;
-    background: rgba(154, 198, 154, 0.85);
-    cursor: pointer;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  margin-block: 0.5em;
+  background: rgba(154, 198, 154, 0.85);
+  cursor: pointer;
 }
 
-#search-results{
-    background: #3E5622;
-    padding-left: 38px;
-    margin-top: 10px;
-    border-radius: 20px;
-    padding-right: 38px;
+#search-results {
+  background: #3e5622;
+  padding-left: 38px;
+  margin-top: 10px;
+  border-radius: 20px;
+  padding-right: 38px;
 }
 
-#search-input{
+#search-input {
   border: none;
   border-radius: 8px;
   padding: 5px;
 }
 
-#submit-button{
-    padding: 5px;
-    background: darkkhaki;
-    border: none;
-    border-radius: 8px;
+#submit-button {
+  padding: 5px;
+  background: darkkhaki;
+  border: none;
+  border-radius: 8px;
+}
+
+.dark #back-btn svg {
+  stroke: #ffffff !important;
+}
+
+.dark #search-input::placeholder {
+  color: #a8d860 !important;
 }
