@@ -101,8 +101,10 @@ This project is available under the [Creative Commons Attribution-ShareAlike 4.0
 - Malcolm Roosdahl : mroosdahl@my.bcit.ca
 - Zach Mosdell : zmosdell@my.bcit.ca
 - Veerpartap Singh Kahlon : Vkahlon4@my.bcit.ca
+- Shaan Puar : Spuar2@my.bcit.ca
+- Xi Yao : xyao23@my.bcit.ca
 
-## Run your GreenScan yourself
+## Run GreenScan yourself
 Follow these steps to set up GreenScan on your local machine for development and testing.
 
 ### Prerequisites
@@ -158,6 +160,3 @@ To run the application normally without auto-reloading:
 ```bash
 npm start
 ```
-
-- Shaan Puar : Spuar2@my.bcit.ca
-- Xi Yao : xyao23@my.bcit.ca
