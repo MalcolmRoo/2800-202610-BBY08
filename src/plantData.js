@@ -281,6 +281,3 @@ async function fetchlookAlikeImg (scientificName) {
 console.error("Permapeople error:", err);
 }
 }
-
-
-
