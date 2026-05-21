@@ -6,6 +6,12 @@ var textElement = document.createElement("p");
 var mascot = document.getElementById("Mascot");
 var mascotImg = document.getElementById("mascotImg");
 
+const settings = document.getElementById('settings');
+const capture = document.getElementById('capture-card');
+const upload = document.getElementById('upload-card');
+const fav = document.getElementById('favourites-card');
+const search = document.getElementById('search-bar');
+
 let stage = 0;
 
 // Step 0: Initializing the welcome bubble
@@ -60,11 +66,7 @@ nextButton.addEventListener("click", (event) => {
   }
 });
 
-const settings = document.getElementById('settings');
-const capture = document.getElementById('capture-card');
-const upload = document.getElementById('upload-card');
-const fav = document.getElementById('favourites-card');
-const search = document.getElementById('search-bar');
+
 
 let mushroomClicks = 0;
 
