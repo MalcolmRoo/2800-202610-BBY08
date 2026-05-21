@@ -85,10 +85,13 @@ function displayPlant(data) {
   const isLocal = data.is_local;
   const localData = data.local_data;
 
-  // Plant image from Permapeople CDN — now as hero panel background
+  // Plant image from Permapeople CDN — as hero panel background
   if (data.images?.title) {
     const heroPanel = document.getElementById("hero-panel");
     heroPanel.style.backgroundImage = `url(${data.images.title})`;
+    // Also set on #plant-image so initFavButton can read it
+    const plantImg = document.getElementById('plant-image');
+    if (plantImg) plantImg.src = data.images.title;
     if (typeof saveImage === 'function' && latinName) {
       saveImage(latinName, data.images.title);
     }

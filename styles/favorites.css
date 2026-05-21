@@ -1,5 +1,3 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --bg-base: #111a0a;
   --bg-card: #1a2a10;
@@ -72,10 +70,6 @@ body {
 .fav-cta:hover { background: #c0e870; transform: translateY(-2px); }
 .fav-cta:active { transform: translateY(0); }
 
-
-/* ── UTILS ── */
-
-.hidden { display: none !important; }
 
 @keyframes cardReveal { from { opacity: 0; transform: translateY(20px) scale(0.94); } to { opacity: 1; } }
 

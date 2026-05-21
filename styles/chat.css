@@ -1,6 +1,3 @@
-/* --- Global Resets & Layout Base --- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
 body, #chat-page, #chat-messages-area { background: #2d4a1a; }
 
 body {

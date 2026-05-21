@@ -1,7 +1,5 @@
 :root { --olive-dark: #517B2C; --sage: #90C447; --sage-light: #BCDA70; --bg-index: #1A2912; }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
 body.index-page { background: var(--bg-index); }
 
 h1 { margin-bottom: 8px; color: #C7DD9F; font-size: 48px; text-align: center; }
