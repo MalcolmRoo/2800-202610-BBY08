@@ -101,12 +101,6 @@ async function initFavButton(plantId, plantLatin) {
     });
 }
 
-// Tag sets for plant cards
-const TAG_SETS = [
-    ['Full Sun', 'Annual'], ['Indoor', 'Low Water'], ['Low Light', 'Tropical'],
-    ['Perennial', 'Air Purifying'], ['Drought Tolerant'], ['Fast Growth'],
-];
-
 // Render favourites grid
 async function renderFavoritesList() {
     const gridEl = document.getElementById('fav-grid');
@@ -120,16 +114,16 @@ async function renderFavoritesList() {
     if (subEl) subEl.textContent = favs.length === 0 ? 'Your saved plants' : `${favs.length} plant${favs.length !== 1 ? 's' : ''} saved`;
 
     gridEl.innerHTML = favs.map((p, i) => {
-        const tags = TAG_SETS[i % TAG_SETS.length];
         return `
         <div class="fav-card" style="animation-delay:${i * 0.08}s" data-favname="${encodeURIComponent(p.commonName)}" data-favlatin="${encodeURIComponent(p.latinName || '')}">
             ${p.imageUrl ? `<div class="fav-card-img" style="background-image:url('${p.imageUrl}')"></div>` : `<div class="fav-card-art"></div>`}
-            <div class="fav-card-name">${p.commonName}</div>
-            <div class="fav-card-latin">${p.latinName || ''}</div>
-            <div class="fav-card-footer">
-                <div class="fav-card-tags">${tags.map(t => `<span class="fav-tag">${t}</span>`).join('')}</div>
+            <div class="fav-card-bottom">
+                <div class="fav-card-bottom-left">
+                    <div class="fav-card-name">${p.commonName}</div>
+                    <div class="fav-card-latin">${p.latinName || ''}</div>
+                </div>
                 <button class="fav-remove" data-favid="${p.id}">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                     </svg>
                 </button>
