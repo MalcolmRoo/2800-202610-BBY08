@@ -85,11 +85,10 @@ function displayPlant(data) {
   const isLocal = data.is_local;
   const localData = data.local_data;
 
-  // Plant image from Permapeople CDN — larger image below
+  // Plant image from Permapeople CDN — now as hero panel background
   if (data.images?.title) {
-    const img = document.getElementById("plant-image");
-    img.src = data.images.title;
-    img.style.display = "block";
+    const heroPanel = document.getElementById("hero-panel");
+    heroPanel.style.backgroundImage = `url(${data.images.title})`;
     if (typeof saveImage === 'function' && latinName) {
       saveImage(latinName, data.images.title);
     }
@@ -97,27 +96,19 @@ function displayPlant(data) {
 
   // Edibility
   const edibleRaw = getField(d, "Edible");
-  const edibleParts = getField(d, "Edible parts");
-  const edibleUses = getField(d, "Edible uses");
-  console.log("Edible raw value:", edibleRaw);
-
-  const isEdibleFlag =
+  const isEdible =
     edibleRaw?.toLowerCase() === "true" ||
     edibleRaw === "1" ||
     edibleRaw?.toLowerCase() === "yes";
-  
-  const hasEdibleParts = 
-    edibleParts !== null &&
-    edibleParts !== undefined &&
-    String(edibleParts).trim() !== "";
-
-  const isEdible = isEdibleFlag || hasEdibleParts;
+  const edibleParts = getField(d, "Edible parts");
+  const edibleUses = getField(d, "Edible uses");
+  console.log("Edible raw value:", edibleRaw);
   
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
-  // const plantIcon = document.getElementById("plant-icon");
-  // const plantLabel = document.getElementById("plant-label");
+  const plantIcon = document.getElementById("plant-icon");
+  const plantLabel = document.getElementById("plant-label");
 
   if (isEdible) {
     statusEl.textContent = "Safe";
@@ -129,8 +120,8 @@ function displayPlant(data) {
     statusEl.className = "stat-value danger"; // red color
     edibleEl.textContent = "No";
     edibleEl.className = "stat-value danger"; // red color
-    // plantIcon.classList.add("danger"); // red circle border
-    // plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
+    plantIcon.classList.add("danger"); // red circle border
+    plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
   }
 
   // Edible parts and uses only — badge already shown in stats bar
@@ -188,13 +179,6 @@ function displayPlant(data) {
     "Leaves",
     "Medicinal",
   ];
-
-  // Special alert for Apiaceae family, which includes deadly plants like poison hemlock
-    const family = getField(d, "Family");
-    if (family.toLowerCase().includes("apiaceae")) {
-      const risk = document.querySelector(".risk");
-      risk.style.display = "flex";
-    }
 
   let infoContent = "";
   infoKeys.forEach((key) => {
