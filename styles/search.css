@@ -84,15 +84,15 @@
   stroke: #95B46A;
   opacity: 0.7;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 35px;
 }
 
 #search-page .search-bar .search-input {
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 16px;
+  font-size: 20px;
   color: var(--text-cream);
   outline: none;
   font-family: inherit;
