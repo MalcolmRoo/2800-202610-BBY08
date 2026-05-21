@@ -97,10 +97,67 @@ Visit this link for the most recent stable release: [GreenScan](https://two800-2
 ## Licenses
 This project is available under the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) license.
 
-
 ## The Team
 - Malcolm Roosdahl : mroosdahl@my.bcit.ca
 - Zach Mosdell : zmosdell@my.bcit.ca
 - Veerpartap Singh Kahlon : Vkahlon4@my.bcit.ca
+
+## Run your GreenScan yourself
+Follow these steps to set up GreenScan on your local machine for development and testing.
+
+### Prerequisites
+
+*   **Node.js**: `^18.0.0` or higher (Recommended)
+*   **MongoDB**: A local MongoDB instance or a MongoDB Atlas connection URI
+*   **npm**: Installed automatically with Node.js
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com
+    cd 2800-202610-BBY08
+    ```
+
+2.  **Install the dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure environment variables:**
+    Create a `.env` file in the root directory:
+    ```bash
+    touch .env
+    ```
+    Open the `.env` file and add the following required configurations:
+    ```env
+    PLANTNET_API_KEY = plant_net_api_key
+    PERMA_KEY_SECRET = permapeople_key_secret
+    PERMA_KEY_ID = permapeople_key_id
+    GROQ_API_KEY= groq_api_key
+    DATABASE_PASS= database_password
+    NODE_SECRET= node_secret_key
+    HOST= mongodb_host_id
+    USER= mongodb_user
+    MONGO_SESSION_SECRET= mongodb_session_secret
+    SESSION_DB= session_collection_name
+    USER_DB= users_collection_name
+    ```
+### Running Locally
+
+To start the server in development mode with automatic file reloading (`nodemon`):
+```bash
+npm run dev
+```
+
+The application will be accessible at: `http://localhost:3000`
+
+### Production Mode
+
+To run the application normally without auto-reloading:
+```bash
+npm start
+```
+
 - Shaan Puar : Spuar2@my.bcit.ca
 - Xi Yao : xyao23@my.bcit.ca
