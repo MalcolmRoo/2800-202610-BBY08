@@ -108,8 +108,10 @@
 .status-label.safe { color: #4caf50; }
 .status-label.deadly { color: #ff4d4d; }
 
-/* Buttons */
-button {
+
+#cancel-btn {
+    background-color: #f5e6be;
+    color: #1a2a1a;
     width: 100%;
     padding: 12px;
     margin-top: 10px;
@@ -119,15 +121,17 @@ button {
     cursor: pointer;
 }
 
-#cancel-btn {
-    background-color: #f5e6be;
-    color: #1a2a1a;
-}
-
 #proceed-btn {
     background-color: #8b0000;
     color: white;
     opacity: 0.8; 
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 25px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
 }
 #cancel-btn:hover {
     filter: brightness(0.8);
@@ -146,6 +150,7 @@ button {
     padding-block:5px;
     justify-content: center;
     margin-bottom: 20px;
+    z-index: 10;
 
     &:hover {
         height: fit-content;

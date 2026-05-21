@@ -1,12 +1,12 @@
-require('node:dns/promises').setServers(['1.1.1.1', '8.8.8.8']);
+require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 
 require("dotenv").config();
 const express = require("express");
-const session = require('express-session');
-const MongoStore = require('connect-mongo').default;
-const bcrypt = require('bcrypt');
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
+const bcrypt = require("bcrypt");
 const saltRounds = 12;
-const Joi = require('joi');
+const Joi = require("joi");
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
@@ -30,9 +30,8 @@ const mongodb_user_database = process.env.USER_DB;
 
 const node_session_secret = process.env.NODE_SECRET;
 
-const { database } = require('./src/databaseConnection');
-const userCollection = database.db(mongodb_user_database).collection('users');
-
+const { database } = require("./src/databaseConnection");
+const userCollection = database.db(mongodb_user_database).collection("users");
 
 // middleware
 app.use(cors());
@@ -123,6 +122,124 @@ app.post("/api/identify", upload.single("image"), async (req, res) => {
   }
 });
 
+// PlantNet disease endpoint — checks if image shows disease symptoms
+// If high confidence match → asks Groq for disease name
+app.post("/api/identify-disease", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No image provided" });
+
+    const { plantName, latinName } = req.body;
+    const apiKey = process.env.PLANTNET_API_KEY;
+
+    console.log("[DISEASE] Checking image for disease symptoms...");
+
+    // Step 1 — send image to PlantNet disease endpoint
+    const form = new FormData();
+    form.append("images", req.file.buffer, {
+      filename: "plant.jpg",
+      contentType: req.file.mimetype,
+    });
+
+    const response = await fetch(
+      `https://my-api.plantnet.org/v2/identify/diseases?api-key=${apiKey}`,
+      { method: "POST", body: form },
+    );
+
+    console.log("[DISEASE] PlantNet status:", response.status);
+
+    if (!response.ok) {
+      console.log("[DISEASE] PlantNet error — no disease detected");
+      return res.json({ diseaseFound: false });
+    }
+
+    const data = await response.json();
+    const top = data.results?.[0];
+
+    if (!top) {
+      console.log("[DISEASE] No results from PlantNet");
+      return res.json({ diseaseFound: false });
+    }
+
+    console.log("[DISEASE] PlantNet score:", top.score);
+    console.log(
+      "[DISEASE] PlantNet species:",
+      top.species?.scientificNameWithoutAuthor,
+    );
+
+    // Step 2 — check if score is high AND species matches identified plant
+    const plantNetSpecies =
+      top.species?.scientificNameWithoutAuthor?.toLowerCase() || "";
+    const identifiedSpecies = (latinName || "").toLowerCase();
+    const speciesMatch =
+      identifiedSpecies &&
+      plantNetSpecies &&
+      (plantNetSpecies.includes(identifiedSpecies.split(" ")[0]) ||
+        identifiedSpecies.includes(plantNetSpecies.split(" ")[0]));
+
+    console.log(
+      "[DISEASE] Species match:",
+      speciesMatch,
+      `(${plantNetSpecies} vs ${identifiedSpecies})`,
+    );
+
+    // High score + species match = image likely shows diseased plant
+    if (top.score < 0.5) {
+      console.log(
+        "[DISEASE] Low confidence or species mismatch — no disease warning",
+      );
+      return res.json({ diseaseFound: false });
+    }
+
+    // Step 3 — ask Groq for the disease name since PlantNet doesn't give it
+    console.log(
+      "[DISEASE] High confidence match — asking Groq for disease name...",
+    );
+
+    const groqApiKey = process.env.GROQ_API_KEY;
+    const groqResponse = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: `You are a plant disease expert. Respond ONLY with a JSON object, no markdown, no extra text. Format: {"diseaseName": "name", "shortWarning": "one sentence warning for foragers"}`,
+            },
+            {
+              role: "user",
+              content: `A plant disease detection system flagged an image of ${plantName} (${latinName}) as likely showing disease symptoms. What is the most common disease that affects this plant visually? Give the most likely disease name and a short forager warning.`,
+            },
+          ],
+          max_tokens: 100,
+          temperature: 0.3,
+        }),
+      },
+    );
+
+    const groqData = await groqResponse.json();
+    const raw = groqData.choices[0]?.message?.content || "{}";
+    const clean = raw.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(clean);
+
+    console.log("[DISEASE] Groq disease result:", parsed);
+
+    res.json({
+      diseaseFound: true,
+      diseaseName: parsed.diseaseName || "Unknown Disease",
+      shortWarning: parsed.shortWarning || "",
+    });
+  } catch (err) {
+    console.error("[DISEASE] ERROR:", err.message);
+    res.json({ diseaseFound: false });
+  }
+});
+
 // Permapeople search route — searches by scientific name, returns plant list
 app.post("/api/permapeople/search", async (req, res) => {
   try {
@@ -205,8 +322,7 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
 // Groq AI chat route — receives plant context + user question, returns AI answer
 app.post("/api/chat", async (req, res) => {
   try {
-    const { plantName, latinName, question } = req.body;
-
+    const { plantName, latinName, question, disease } = req.body;
     // Validate inputs
     if (!question || !plantName) {
       return res.status(400).json({ error: "Missing plant name or question" });
@@ -219,6 +335,7 @@ app.post("/api/chat", async (req, res) => {
     // and restricts it to only answer plant-related questions
     const systemPrompt = `You are a helpful plant assistant for GreenScan, an urban foraging app. 
 The user has just identified a plant: ${plantName} (${latinName}).
+${disease ? `Important: This plant may be affected by ${disease}. Be ready to answer questions about this disease.` : ""}
 Your job is to answer questions about this specific plant only.
 Topics you can help with: edibility, preparation methods, safety, foraging tips, medicinal uses, habitat.
 If asked anything unrelated to this plant or foraging, politely redirect the conversation back to the plant.
@@ -273,19 +390,21 @@ try to give short and concise answers, if the answer is too long try to summariz
 var mongoStore = MongoStore.create({
   mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
   crypto: {
-    secret: process.env.MONGO_SESSION_SECRET
-  }
+    secret: process.env.MONGO_SESSION_SECRET,
+  },
 });
 
-app.use(session({
-  secret: node_session_secret,
-  store: mongoStore,
-  saveUninitialized: false,
-  resave: true
-}));
+app.use(
+  session({
+    secret: node_session_secret,
+    store: mongoStore,
+    saveUninitialized: false,
+    resave: true,
+  }),
+);
 
 //Check Database for user and compare password if passes login
-app.post('/loginSubmit', async (req, res) => {
+app.post("/loginSubmit", async (req, res) => {
   var email = req.body.email;
   var password = req.body.password;
 
@@ -294,7 +413,7 @@ app.post('/loginSubmit', async (req, res) => {
 
   if (validationResult.error != null) {
     console.log(validationResult.error);
-    res.redirect('/login');
+    res.redirect("/login");
     return;
   }
 
@@ -319,7 +438,7 @@ app.post('/loginSubmit', async (req, res) => {
     req.session.username = result[0].username;
     req.session.cookie.maxAge = expireTime;
 
-    res.redirect('/');
+    res.redirect("/");
     return;
   } else {
     // what to do if pass is wrong
@@ -329,7 +448,7 @@ app.post('/loginSubmit', async (req, res) => {
 });
 
 //Create a new user in the database
-app.post('/signUpSubmit', async (req, res) => {
+app.post("/signUpSubmit", async (req, res) => {
   var username = req.body.username;
   var email = req.body.email;
   var password = req.body.password;
@@ -337,38 +456,37 @@ app.post('/signUpSubmit', async (req, res) => {
   const schema = Joi.object({
     username: Joi.string().alphanum().max(35).required(),
     email: Joi.string().max(45).required(),
-    password: Joi.string().max(20).required()
+    password: Joi.string().max(20).required(),
   });
 
   const validationResult = schema.validate({ username, email, password });
 
   if (validationResult.error != null) {
     console.log(validationResult.error);
-    res.redirect('/login');
+    res.redirect("/login");
     return;
   }
 
   var hashedPassword = bcrypt.hashSync(password, saltRounds);
-  await userCollection.insertOne(
-    {
-      username: username,
-      email: email,
-      password: hashedPassword,
-      favorites: [],
-      settings: {}
-    });
+  await userCollection.insertOne({
+    username: username,
+    email: email,
+    password: hashedPassword,
+    favorites: [],
+    settings: {},
+  });
 
   req.session.authenticated = true;
   req.session.username = username;
   req.session.cookie.maxAge = expireTime;
 
-  res.redirect('/');
+  res.redirect("/");
   return;
 });
 
 app.get("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect('/');
+  res.redirect("/");
   return;
 });
 
@@ -405,7 +523,9 @@ app.post("/user/favorites", express.json(), async (req, res) => {
     const { id, commonName, latinName, savedAt, imageUrl } = req.body;
 
     if (!id) {
-      return res.status(400).json({ error: "Missing plant id in request payload" });
+      return res
+        .status(400)
+        .json({ error: "Missing plant id in request payload" });
     }
 
     const newFavorite = { id, commonName, latinName, savedAt, imageUrl };
@@ -414,10 +534,12 @@ app.post("/user/favorites", express.json(), async (req, res) => {
     await userCollection.updateOne(
       { username: userId },
       { $addToSet: { favorites: newFavorite } },
-      { upsert: true } // Creates the user document if it doesn't exist yet
+      { upsert: true }, // Creates the user document if it doesn't exist yet
     );
 
-    res.status(200).json({ success: true, message: "Favorite saved to database" });
+    res
+      .status(200)
+      .json({ success: true, message: "Favorite saved to database" });
   } catch (err) {
     console.error("Error saving favorite to DB:", err);
     res.status(500).json({ error: "Failed to save favorite" });
@@ -437,10 +559,12 @@ app.delete("/user/favorites/:id", async (req, res) => {
     // Pull the item matching the unique plant ID out of the favorites array
     await userCollection.updateOne(
       { username: userId },
-      { $pull: { favorites: { id: plantId } } }
+      { $pull: { favorites: { id: plantId } } },
     );
 
-    res.status(200).json({ success: true, message: "Favorite removed from database" });
+    res
+      .status(200)
+      .json({ success: true, message: "Favorite removed from database" });
   } catch (err) {
     console.error("Error removing favorite from DB:", err);
     res.status(500).json({ error: "Failed to remove favorite" });
@@ -476,19 +600,15 @@ app.post("/user/settings", express.json(), async (req, res) => {
     // Uses dot-notation to dynamically target and update exactly one setting key pair
     await userCollection.updateOne(
       { $set: { [`settings.${key}`]: value } },
-      { upsert: true }
+      { upsert: true },
     );
 
     res.json({ success: true });
-
-
   } catch (err) {
     console.error("Failed to write settings to DB:", err);
     res.status(500).json({ error: "Database write failure" });
   }
 });
-
-
 
 // page routes — serve HTML files
 app.get("/chat", (req, res) => {

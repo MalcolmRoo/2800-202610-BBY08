@@ -21,13 +21,13 @@
                     <div id="safe-card">
                         <span class="status-label safe">SAFE</span>
                         <b id="safe-name"></b>
-                        <img id="safe-img">
+                        <img id="safe-img" />
                         <p id="safe-tip"></p>
                     </div>
                     <div id="deadly-card">
                         <span class="status-label deadly">TOXIC</span>
                         <b id="deadly-name"></b>
-                        <img id="deadly-img">
+                        <img id="deadly-img" />
                         <p id="deadly-tip"></p>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
         <h1 id="common-name">Loading...</h1>
         <p id="latin-name"></p>
 
-        <div class="risk" tabindex="0">
+        <div class="risk" tabindex="1">
             <img src="warning.png" id="risk-img">
             <p id="risk-text"><b>Apiaceae Family:</b> High risk  for toxic look-alikes.</p>
             <div class="break"></div>
@@ -135,6 +135,8 @@
             style="display: none"
           />
         </div>
+        
+        <div id="confidence-warning"></div>
 
         <!-- All sections injected dynamically -->
         <div id="plant-details"></div>
