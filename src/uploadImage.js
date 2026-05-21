@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-let selectedOrgan = "leaf";
+let selectedOrgan = "auto";
 
 async function sendToPlantNet(imageBlob) {
   // Show loading overlay
@@ -53,8 +53,7 @@ async function sendToPlantNet(imageBlob) {
 
     if (score < userThreshold) {
       alert(
-        `Confidence too low.\n\nModel confidence: ${data.score}%\nYour threshold: ${
-          userThreshold * 100
+        `Confidence too low.\n\nModel confidence: ${data.score}%\nYour threshold: ${userThreshold * 100
         }%`,
       );
       return; // stop here, do NOT redirect

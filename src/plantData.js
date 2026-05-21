@@ -65,8 +65,8 @@ async function fetchPermapeople(scientificName) {
     if (data.trigger_warning) {
 
       renderWarning(data);
-    
-  };
+
+    };
 
     // Step 3 — display the data
     displayPlant(data);
@@ -104,7 +104,7 @@ function displayPlant(data) {
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
-  
+
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
@@ -129,7 +129,7 @@ function displayPlant(data) {
   let edibilityContent = "";
   if (edibleParts)
     edibilityContent += `<p><strong>Parts:</strong> ${edibleParts}</p>`;
-  else if(isLocal && localData.EdibleParts != "") //Local Database
+  else if (isLocal && localData.EdibleParts != "") //Local Database
     edibilityContent += `<p> ${localData.EdibleParts}</p>`;
   if (edibleUses)
     edibilityContent += `<p><strong>Uses:</strong> ${edibleUses}</p>`;
@@ -145,7 +145,7 @@ function displayPlant(data) {
     const paragraphs = description.split("\r\n\r\n").slice(0, 2).join(" ");
     howToContent += `<p>${paragraphs}</p>`;
   }
-  if(isLocal && localData.PreparationMethods != ""){
+  if (isLocal && localData.PreparationMethods != "") {
     howToContent += `<p><strong>Preparation Methods:</strong> ${localData.PreparationMethods}</p>`;
   }
   if (utility) howToContent += `<p><strong>Known Uses:</strong> ${utility}</p>`;
@@ -156,15 +156,15 @@ function displayPlant(data) {
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
   if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
-  if(warning && isLocal && localData.Warnings != "") //Local Database
+  if (warning && isLocal && localData.Warnings != "") //Local Database
     hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
-  
+
   addSection("Known Hazards", hazardContent || null, true); // isHazard = true
 
   let extraNotes = "";
-  if(isLocal && localData.Notes != "")
+  if (isLocal && localData.Notes != "")
     extraNotes += `<p><strong>Additional Details:</strong> ${localData.Notes}`;
   addSection("Extra Notes", extraNotes);
 
@@ -182,11 +182,11 @@ function displayPlant(data) {
   ];
 
   // Special alert for Apiaceae family, which includes deadly plants like poison hemlock
-    const family = getField(d, "Family");
-    if (family.toLowerCase().includes("apiaceae")) {
-      const risk = document.querySelector(".risk");
-      risk.style.display = "flex";
-    }
+  const family = getField(d, "Family");
+  if (family.toLowerCase().includes("apiaceae")) {
+    const risk = document.querySelector(".risk");
+    risk.style.display = "flex";
+  }
 
   let infoContent = "";
   infoKeys.forEach((key) => {
@@ -226,48 +226,50 @@ if (typeof initFavButton === 'function') {
   initFavButton(latinName || commonName);
 }
 
+//If plant has a toxic look-alike a warning will take over the screen
 async function renderWarning(data) {
   const local = data.local_data;
-    const overlay = document.getElementById('warning-overlay');
-    const warnId = document.getElementById('identify-text');
-    const safeName = document.getElementById('safe-name');
-    const deadlyName = document.getElementById('deadly-name');
-    const safeTip = document.getElementById('safe-tip');
-    const deadlyTip = document.getElementById('deadly-tip');
-    const safeImg = document.getElementById('safe-img');
-    const deadlyImg = document.getElementById('deadly-img');
+  const overlay = document.getElementById('warning-overlay');
+  const warnId = document.getElementById('identify-text');
+  const safeName = document.getElementById('safe-name');
+  const deadlyName = document.getElementById('deadly-name');
+  const safeTip = document.getElementById('safe-tip');
+  const deadlyTip = document.getElementById('deadly-tip');
+  const safeImg = document.getElementById('safe-img');
+  const deadlyImg = document.getElementById('deadly-img');
 
-    // Inject the data into the tags
-    warnId.innerText = "You have Identified " + local.PlantName + " there is a toxic look-alike that could be FATAL if consumed.";
+  // Inject the data into the tags
+  warnId.innerText = "You have Identified " + local.PlantName + " there is a toxic look-alike that could be FATAL if consumed.";
 
-    safeName.innerText = local.PlantName;
-    deadlyName.innerText = local.LookAlike;
+  safeName.innerText = local.PlantName;
+  deadlyName.innerText = local.LookAlike;
 
-    safeImg.src = data.images.title;
+  safeImg.src = data.images.title;
+  //new fetch for comparison image
+  const lookAlikeImg = await fetchlookAlikeImg(local.lookAlikeInfo.ScientificName);
+  deadlyImg.src = lookAlikeImg;
 
-    const lookAlikeImg = await fetchlookAlikeImg(local.lookAlikeInfo.ScientificName);
-    deadlyImg.src = lookAlikeImg;
-    
-    safeTip.innerText = local.Identification;
-    deadlyTip.innerText = local.lookAlikeInfo.Identification;
+  safeTip.innerText = local.Identification;
+  deadlyTip.innerText = local.lookAlikeInfo.Identification;
 
-    // Show the overlay by changing the style
-    overlay.style.display = 'flex';
-    
+  // Show the overlay by changing the style
+  overlay.style.display = 'flex';
 
-    //close button
-    document.getElementById('proceed-btn').onclick = () => {
-        overlay.style.display = 'none';
-    };
 
-    document.getElementById('cancel-btn').onclick = () => {
-      window.location.href = '/';
-    }
+  //close button
+  document.getElementById('proceed-btn').onclick = () => {
+    overlay.style.display = 'none';
+  };
+  //return to home if user is unsure
+  document.getElementById('cancel-btn').onclick = () => {
+    window.location.href = '/';
+  }
 }
 
-async function fetchlookAlikeImg (scientificName) {
-   try {
-    // Step 1 — search Permapeople by scientific name
+//toxic plant image fetch using permapeople
+async function fetchlookAlikeImg(scientificName) {
+  try {
+    //search Permapeople by scientific name
     const searchRes = await fetch("/api/permapeople/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -279,15 +281,15 @@ async function fetchlookAlikeImg (scientificName) {
 
     if (!first) return;
 
-    // Step 2 — fetch full plant details using ID from search
+    //fetch full plant details using ID from search
     const plantRes = await fetch(`/api/permapeople/plants/${first.id}`);
     const data = await plantRes.json();
 
     return data.images.title;
 
-} catch(err) {
-console.error("Permapeople error:", err);
-}
+  } catch (err) {
+    console.error("Permapeople error:", err);
+  }
 }
 
 

@@ -374,6 +374,7 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 #favourites-card b, #favourites-card small { font-size: 14px; }
 
+/*for animation of mushroom being clicked*/
 #mascotShakeWrap {
     position: absolute;
     display: inline-block;

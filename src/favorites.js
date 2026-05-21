@@ -22,9 +22,9 @@ const saveLocalImage = (id, url) => {
 };
 //Gets favorites from database
 const getDbFavs = async () => {
-    try{
+    try {
         const response = await fetch('/user/favorites');
-        if(!response.ok) return [];
+        if (!response.ok) return [];
         return await response.json();
     } catch (err) {
         console.errror("Failed to fetch DB favourites:", err);
@@ -53,7 +53,7 @@ const getUnifiedFavs = async () => {
 
     const uniqueMap = new Map();
     combined.forEach(plant => {
-        if(!uniqueMap.has(plant.id)) {
+        if (!uniqueMap.has(plant.id)) {
             uniqueMap.set(plant.id, plant);
         }
     });
@@ -80,7 +80,7 @@ async function toggleFavorite({ id, commonName, latinName, imageUrl = null }) {
         const localExistsIndex = localFavs.findIndex(p => p.id === id);
         const dbFavs = await getDbFavs();
         const dbExists = dbFavs.some(p => p.id === id);
-        
+
         // If imageUrl wasn't passed directly, fall back to checking local storage
         if (!imageUrl) {
             const allImages = getLocalImages();
@@ -101,12 +101,12 @@ async function toggleFavorite({ id, commonName, latinName, imageUrl = null }) {
         } else {
             // Process
             const newPlant = { id, commonName, latinName: latinName || '', savedAt: new Date().toISOString() };
-            
+
             // Local Storage Save
             localFavs.push(newPlant);
             saveLocalFavs(localFavs);
-            
-            
+
+
             if (imageUrl) {
                 saveLocalImage(id, imageUrl);
             }
@@ -140,14 +140,14 @@ async function updateFavButton(id) {
 async function initFavButton(plantId, plantLatin) {
     const btn = document.getElementById('fav-btn');
     if (!btn) return;
-    
+
     await updateFavButton(plantId);
-    
+
     btn.addEventListener('click', () => {
         // FIXED: Extract the active URL string straight from the <img> element src attribute
         const imgElement = document.getElementById('plant-image');
         let currentImgUrl = null;
-        
+
         if (imgElement && imgElement.src && !imgElement.src.endsWith('/')) {
             currentImgUrl = imgElement.src;
         }
@@ -180,14 +180,14 @@ async function renderFavoritesList() {
     const subEl = document.getElementById('fav-subtitle');
     if (!gridEl || !emptyEl) return;
     const favs = await getUnifiedFavs();
-    
 
-    
+
+
     gridEl.classList.toggle('hidden', favs.length === 0);
     emptyEl.classList.toggle('hidden', favs.length > 0);
     if (subEl) {
         subEl.textContent = favs.length === 0 ? 'Your saved plants' : `${favs.length} plant${favs.length !== 1 ? 's' : ''} saved`;
-        
+
     }
 
     const cards = favs.map((p, i) => {
@@ -216,6 +216,7 @@ async function renderFavoritesList() {
 // Automatically call renderFavoritesList when the favourites page loads
 if (document.getElementById('fav-grid')) renderFavoritesList();
 
+//Display badge after 10 favorites
 if (getLocalFavs().length >= 10 || getDbFavs.length >= 10) {
     document.getElementById('badge').style.display = "block";
 }

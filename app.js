@@ -30,7 +30,7 @@ const mongodb_user_database = process.env.USER_DB;
 
 const node_session_secret = process.env.NODE_SECRET;
 
-const {database} = require('./src/databaseConnection');
+const { database } = require('./src/databaseConnection');
 const userCollection = database.db(mongodb_user_database).collection('users');
 
 
@@ -184,7 +184,7 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
         is_local: !!localInfo,
       };
 
-      if (finalData.is_local && finalData.local_data.LookAlike?.trim() !== ""){
+      if (finalData.is_local && finalData.local_data.LookAlike?.trim() !== "") {
         finalData.trigger_warning = true;
         const lookAlikeName = finalData.local_data.LookAlike;
         const lookAlikeInfo = await findPlantInCSV(lookAlikeName);
@@ -222,7 +222,7 @@ The user has just identified a plant: ${plantName} (${latinName}).
 Your job is to answer questions about this specific plant only.
 Topics you can help with: edibility, preparation methods, safety, foraging tips, medicinal uses, habitat.
 If asked anything unrelated to this plant or foraging, politely redirect the conversation back to the plant.
-Keep answers concise, clear and beginner-friendly. Make sure that the answers and stright to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
+Keep answers concise, clear and beginner-friendly. Make sure that the answers and straight to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
 try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.
  `;
 
@@ -271,50 +271,50 @@ try to give short and concise answers, if the answer is too long try to summariz
 
 //Connect to Database
 var mongoStore = MongoStore.create({
-  mongoUrl:`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
+  mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
   crypto: {
     secret: process.env.MONGO_SESSION_SECRET
   }
 });
 
 app.use(session({
-    secret: node_session_secret,
-    store: mongoStore,
-    saveUninitialized: false,
-    resave: true
+  secret: node_session_secret,
+  store: mongoStore,
+  saveUninitialized: false,
+  resave: true
 }));
 
 //Check Database for user and compare password if passes login
-app.post('/loginSubmit', async(req, res) => {
+app.post('/loginSubmit', async (req, res) => {
   var email = req.body.email;
   var password = req.body.password;
-  
+
   const schema = Joi.string().max(20).required();
   const validationResult = schema.validate(email);
 
-  if(validationResult.error != null) {
+  if (validationResult.error != null) {
     console.log(validationResult.error);
     res.redirect('/login');
     return;
   }
 
-  const result = await userCollection.find({email: email}).project(
+  const result = await userCollection.find({ email: email }).project(
     {
-      username: 1, 
-      email: 1, 
-      password: 1, 
-      favorites: 1, 
+      username: 1,
+      email: 1,
+      password: 1,
+      favorites: 1,
       settings: 1,
-       _id: 1
-      }).toArray();
+      _id: 1
+    }).toArray();
 
-  if(result.length != 1){
+  if (result.length != 1) {
     //what to do if no user found
     console.log("no user found");
     return;
   }
 
-  if(await bcrypt.compare(password, result[0].password)){
+  if (await bcrypt.compare(password, result[0].password)) {
     req.session.authenticated = true;
     req.session.username = result[0].username;
     req.session.cookie.maxAge = expireTime;
@@ -329,41 +329,41 @@ app.post('/loginSubmit', async(req, res) => {
 });
 
 //Create a new user in the database
-app.post('/signUpSubmit', async(req, res) => {
-    var username = req.body.username;
-    var email = req.body.email;
-    var password = req.body.password;
+app.post('/signUpSubmit', async (req, res) => {
+  var username = req.body.username;
+  var email = req.body.email;
+  var password = req.body.password;
 
-    const schema = Joi.object({
-      username: Joi.string().alphanum().max(35).required(),
-      email: Joi.string().max(45).required(),
-      password: Joi.string().max(20).required()
+  const schema = Joi.object({
+    username: Joi.string().alphanum().max(35).required(),
+    email: Joi.string().max(45).required(),
+    password: Joi.string().max(20).required()
+  });
+
+  const validationResult = schema.validate({ username, email, password });
+
+  if (validationResult.error != null) {
+    console.log(validationResult.error);
+    res.redirect('/login');
+    return;
+  }
+
+  var hashedPassword = bcrypt.hashSync(password, saltRounds);
+  await userCollection.insertOne(
+    {
+      username: username,
+      email: email,
+      password: hashedPassword,
+      favorites: [],
+      settings: {}
     });
 
-    const validationResult = schema.validate({username, email, password});
+  req.session.authenticated = true;
+  req.session.username = username;
+  req.session.cookie.maxAge = expireTime;
 
-    if(validationResult.error != null){
-        console.log(validationResult.error);
-        res.redirect('/login');
-        return;
-    }
-
-    var hashedPassword = bcrypt.hashSync(password, saltRounds);
-    await userCollection.insertOne(
-      {
-        username: username, 
-        email: email, 
-        password: hashedPassword, 
-        favorites:[], 
-        settings:{}
-      });
-
-    req.session.authenticated = true;
-    req.session.username = username;
-    req.session.cookie.maxAge = expireTime;
-
-    res.redirect('/');
-    return;
+  res.redirect('/');
+  return;
 });
 
 app.get("/logout", (req, res) => {
@@ -374,19 +374,19 @@ app.get("/logout", (req, res) => {
 
 //check login status
 app.get("/api/auth-status", (req, res) => {
-    // Checks if a session exists and has a username attached
-    if (req.session && req.session.username) {
-        return res.json({ loggedIn: true, username: req.session.username });
-    }
-    res.json({ loggedIn: false });
+  // Checks if a session exists and has a username attached
+  if (req.session && req.session.username) {
+    return res.json({ loggedIn: true, username: req.session.username });
+  }
+  res.json({ loggedIn: false });
 });
 
 // Fetch all favorites for a user from MongoDB
 app.get("/user/favorites", async (req, res) => {
   try {
     // Note: If you implement login sessions later, replace 'guest_user' with req.session.user_id
-    const userId = req.session.username; 
-    
+    const userId = req.session.username;
+
     const user = await userCollection.findOne({ username: userId });
     if (!user || !user.favorites) {
       return res.json([]);
@@ -452,7 +452,7 @@ app.get("/user/settings", async (req, res) => {
   try {
     const username = req.session.username || "guest_user"; // Hook into active account
     const user = await userCollection.findOne({ username: username });
-    
+
     if (!user || !user.settings) {
       return res.json({});
     }
@@ -481,7 +481,7 @@ app.post("/user/settings", express.json(), async (req, res) => {
 
     res.json({ success: true });
 
-    
+
   } catch (err) {
     console.error("Failed to write settings to DB:", err);
     res.status(500).json({ error: "Database write failure" });

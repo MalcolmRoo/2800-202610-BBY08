@@ -8,12 +8,14 @@ window.addEventListener('DOMContentLoaded', (e) => {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('search');
 
-    if(query){
+    if (query) {
         performSearch(query);
     }
 });
 
+//search API for plants
 async function performSearch(query) {
+    //display loading spinner
     const loader = document.getElementById("loading-overlay");
     console.log("load search");
     if (loader) loader.classList.add("visible");
@@ -24,7 +26,7 @@ async function performSearch(query) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ q: query }),
         });
-        
+
         const results = await response.json();
         if (!response.ok) throw new Error(results.error);
 
@@ -32,49 +34,16 @@ async function performSearch(query) {
     } catch (err) {
         console.error("Search failed:", err);
     } finally {
+        //hide loading spinner
         if (loader) loader.classList.remove("visible");
     }
 }
 
-searchForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    console.log("form search");
-    const query = searchInput.value.trim();
-    if (!query) return;
 
-    //Show loading overlay
-    const loader = document.getElementById("loading-overlay");
-    if (loader) loader.classList.add("visible");
-
-    try {
-        const response = await fetch("/api/permapeople/search", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ q: query }),
-        });
-
-        const results = await response.json();
-
-        if (!response.ok) throw new Error(results.error);
-
-        // Display the search results
-        console.log("Search Results:", results);
-        displayResults(results); 
-
-    } catch (err) {
-        console.error("Search failed:", err);
-        alert("Search failed. Please try again.");
-    } finally {
-        //hide loading overlay
-        if (loader) loader.classList.remove("visible");
-    }
-});
-
+//display results in descending list on page
 function displayResults(results) {
     const plantArray = results.plants;
-    const resultsContainer = document.getElementById("search-results");// Results container Id here
+    const resultsContainer = document.getElementById("search-results");
     resultsContainer.innerHTML = "";
     for (const plant of plantArray) {
         // Create a new element for each plant result
@@ -90,16 +59,16 @@ function displayResults(results) {
         plantElement.appendChild(s);
 
         plantElement.addEventListener("click", async () => {
-             // When a plant is clicked, navigate to the plant details page with query parameters
-             const queryParams = new URLSearchParams({
+            // When a plant is clicked, navigate to the plant details page with query parameters
+            const queryParams = new URLSearchParams({
                 id: plant.id,
                 name: plant.name,
                 latin: plant.scientific_name || "",
                 score: "100", // Since this is a search result, we can assume 100% confidence for the sake of display
-        });
-    
+            });
+
             window.location.href = `/plant?${queryParams.toString()}`;
-                });
+        });
 
 
         resultsContainer.appendChild(plantElement);
