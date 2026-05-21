@@ -17,9 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
 let selectedOrgan = "leaf";
 
 async function sendToPlantNet(imageBlob) {
-  // ⭐ Reset override for new scan
-  sessionStorage.removeItem("overrideConfidence");
-
   // Show loading overlay
   const loader = document.getElementById("loading-overlay");
   // Show the dark overlay
@@ -38,70 +35,17 @@ async function sendToPlantNet(imageBlob) {
     if (!response.ok) throw new Error(data.error || "Identification failed");
 
     // -----------------------------
-    // ⭐ CONFIDENCE WARNING (soft filter)
+    // ⭐ CONFIDENCE THRESHOLD LOGIC
     // -----------------------------
     const userThreshold = JSON.parse(localStorage.getItem("confidence")) || 0.7;
     const score = Number(data.score) / 100; // convert "85" → 0.85
     if (score < userThreshold) {
-      const modal = document.createElement("div");
-      modal.style = `
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  `;
-
-      modal.innerHTML = `
-    <div style="
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 300px;
-      text-align: center;
-    ">
-      <h3>Low Confidence Warning</h3>
-      <p>The model is only <strong>${data.score}%</strong> confident.</p>
-      <p>Your threshold is <strong>${userThreshold * 100}%</strong>.</p>
-
-      <button id="continue-btn" style="
-        margin-top: 10px;
-        padding: 10px 15px;
-        background: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      ">Show Anyway</button>
-
-      <button id="cancel-btn" style="
-        margin-top: 10px;
-        padding: 10px 15px;
-        background: #d9534f;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      ">Cancel</button>
-    </div>
-  `;
-
-      document.body.appendChild(modal);
-
-      document.getElementById("continue-btn").onclick = () => {
-        modal.remove();
-        redirectToPlant(data);
-      };
-
-      document.getElementById("cancel-btn").onclick = () => {
-        modal.remove();
-        return;
-      };
-
-      return;
+      alert(
+        `Confidence too low.\n\nModel confidence: ${data.score}%\nYour threshold: ${
+          userThreshold * 100
+        }%`,
+      );
+      return; // stop here, do NOT redirect
     }
 
     // -----------------------------
@@ -145,14 +89,4 @@ async function sendToPlantNet(imageBlob) {
     // Hide the overlay when done (success or failure)
     if (loader) loader.classList.remove("visible");
   }
-}
-
-function redirectToPlant(data) {
-  const params = new URLSearchParams({
-    name: data.commonName,
-    latin: data.scientificName,
-    score: data.score,
-  });
-
-  window.location.href = `/plant?${params}`;
 }

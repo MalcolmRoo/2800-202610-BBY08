@@ -47,12 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (slider) slider.value = confidence;
     if (valueDisplay) valueDisplay.textContent = confidence;
-
-    // Edible‑Only Mode
-    const edibleToggle = document.getElementById("edibleOnlyToggle");
-    if (edibleToggle) {
-      edibleToggle.checked = loadSetting("edibleOnly", false);
-    }
   }
 
   applySettings();
@@ -106,14 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const value = Number(e.target.value);
       saveSetting("confidence", value);
       valueDisplay.textContent = value;
-    });
-  }
-
-  // EDIBLE‑ONLY MODE
-  const edibleToggle = document.getElementById("edibleOnlyToggle");
-  if (edibleToggle) {
-    edibleToggle.addEventListener("change", (e) => {
-      saveSetting("edibleOnly", e.target.checked);
     });
   }
 });
