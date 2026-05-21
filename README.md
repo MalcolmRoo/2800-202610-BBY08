@@ -37,10 +37,12 @@ GreenScan is an app designed to help you understand and learn about foraging. It
 │   ├── chat.js                # AI chatbot
 │   ├── chatPage.js            # Additonal AI chatbot functionality
 │   ├── csvParse.js            # Parse the local database
+│   ├── databaseConnection.js  # Functions to connect to MongoDB
 │   ├── favorites.js           # Handles favouriting specific results
 │   ├── global.js              # Regularly re-used functions
 │   ├── identify.js            # PlantNet API and PermaPeople API interfacing
 │   ├── index.js               # Main screen functionality
+|   ├── login.js               # Display correct login/sign up form
 │   ├── plantData.js           # Parse and categorize recieved plant data
 │   ├── result.js              # Display text search results
 │   ├── search.js              # Text search functionality
@@ -55,6 +57,7 @@ GreenScan is an app designed to help you understand and learn about foraging. It
 │   ├── favorites.css          # Styles user favourites page
 │   ├── global.css             # Global Style variables
 │   ├── index.css              # Styles main page
+│   ├── login.css              # Styles login/sign up page
 │   ├── plant.css              # Styles plant progile page
 │   ├── search.css             # Styles text search results page
 │   ├── settings.css           # Styles settings page
@@ -96,7 +99,7 @@ This project is available under the [Creative Commons Attribution-ShareAlike 4.0
 
 
 ## The Team
-- Malcolm Roosdahl :
+- Malcolm Roosdahl : mroosdahl@my.bcit.ca
 - Zach Mosdell : zmosdell@my.bcit.ca
 - Veerpartap Singh Kahlon :
 - Shaan Puar : 

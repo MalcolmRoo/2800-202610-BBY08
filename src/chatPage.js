@@ -4,10 +4,28 @@ const params = new URLSearchParams(window.location.search);
 const plantName = params.get("name") || "Unknown Plant";
 const latinName = params.get("latin") || "";
 const score = params.get("score") || "0";
+const disease = params.get("disease") || "";
+const diseaseWarning = params.get("diseaseWarning") || "";
 
 // Fill header
 document.getElementById("chat-plant-name").textContent = plantName;
 document.getElementById("chat-plant-latin").textContent = latinName;
+
+// Show disease warning in header if present
+if (disease) {
+  const diseaseTag = document.createElement("div");
+  diseaseTag.style.cssText =
+    "color:#e05252;font-size:12px;margin-top:4px;font-weight:600;";
+  diseaseTag.textContent = `⚠️ ${disease} detected`;
+  document.getElementById("chat-plant-info").appendChild(diseaseTag);
+
+  // Add warning bubble at start of chat
+  const warningBubble = document.createElement("div");
+  warningBubble.className = "chat-bubble ai";
+  warningBubble.style.borderLeft = "3px solid #e05252";
+  warningBubble.textContent = `⚠️ ${diseaseWarning || "Disease detected: " + disease}. I can answer questions about this disease and how it affects the plant.`;
+  document.getElementById("chat-messages-area").appendChild(warningBubble);
+}
 
 // Back button — returns to plant result page
 document.getElementById("chat-back-btn").addEventListener("click", () => {
@@ -16,6 +34,10 @@ document.getElementById("chat-back-btn").addEventListener("click", () => {
     latin: latinName,
     score,
   });
+  if (disease) {
+    backParams.append("disease", disease);
+    backParams.append("diseaseWarning", diseaseWarning);
+  }
   window.location.href = `/plant?${backParams}`;
 });
 
@@ -37,7 +59,6 @@ chatInput.addEventListener("input", () => {
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") sendMessage();
 });
-
 sendBtn.addEventListener("click", sendMessage);
 
 // Add message bubble
@@ -78,9 +99,8 @@ async function sendMessage() {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plantName, latinName, question }),
+      body: JSON.stringify({ plantName, latinName, question, disease }),
     });
-
     const data = await response.json();
     removeLoadingBubble();
 

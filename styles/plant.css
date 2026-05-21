@@ -292,6 +292,10 @@ body {
   }
 }
 
+.danger{
+  color:#e05252;
+}
+
 .stat-value.danger {
   color: #e05252;
 }
