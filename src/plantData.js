@@ -97,19 +97,27 @@ function displayPlant(data) {
 
   // Edibility
   const edibleRaw = getField(d, "Edible");
-  const isEdible =
-    edibleRaw?.toLowerCase() === "true" ||
-    edibleRaw === "1" ||
-    edibleRaw?.toLowerCase() === "yes";
   const edibleParts = getField(d, "Edible parts");
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
+
+  const isEdibleFlag =
+    edibleRaw?.toLowerCase() === "true" ||
+    edibleRaw === "1" ||
+    edibleRaw?.toLowerCase() === "yes";
+  
+  const hasEdibleParts = 
+    edibleParts !== null &&
+    edibleParts !== undefined &&
+    String(edibleParts).trim() !== "";
+
+  const isEdible = isEdibleFlag || hasEdibleParts;
   
   // Update stats bar — no duplicate edibility text in sections
   const statusEl = document.getElementById("stat-status");
   const edibleEl = document.getElementById("stat-edible");
-  const plantIcon = document.getElementById("plant-icon");
-  const plantLabel = document.getElementById("plant-label");
+  // const plantIcon = document.getElementById("plant-icon");
+  // const plantLabel = document.getElementById("plant-label");
 
   if (isEdible) {
     statusEl.textContent = "Safe";
@@ -121,8 +129,8 @@ function displayPlant(data) {
     statusEl.className = "stat-value danger"; // red color
     edibleEl.textContent = "No";
     edibleEl.className = "stat-value danger"; // red color
-    plantIcon.classList.add("danger"); // red circle border
-    plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
+    // plantIcon.classList.add("danger"); // red circle border
+    // plantLabel.classList.add("danger"); // red "IDENTIFIED PLANT" text
   }
 
   // Edible parts and uses only — badge already shown in stats bar
