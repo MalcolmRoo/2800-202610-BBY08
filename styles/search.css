@@ -1,38 +1,253 @@
-body{
-    background-image: url(/dendelions.png);
-    background-repeat: no-repeat;
-    background-position-y: bottom;
-    background-position-x: left;
+#search-page {
+  --bg-base: #111a0a;
+  --bg-card: #1a2a10;
+  --accent: #a8d860;
+  --text-cream: #e8f0d0;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
 }
 
-.plant-result {
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    margin-block:0.5em;
-    background: rgba(154, 198, 154, 0.85);
-    cursor: pointer;
+/* ── TOPBAR ── */
+#search-topbar {
+  background: var(--bg-card);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(200, 220, 160, 0.07);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-#search-results{
-    background: #3E5622;
-    padding-left: 38px;
-    margin-top: 10px;
-    border-radius: 20px;
-    padding-right: 38px;
+#search-back-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-cream);
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
 }
 
-#search-input{
+#search-back-btn:hover { background: rgba(255, 255, 255, 0.12); }
+#search-back-btn:active { transform: scale(0.92); }
+
+#search-topbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-cream);
+}
+
+/* ── HERO ── */
+#search-hero {
+  background: var(--bg-card);
+  padding: 40px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid rgba(200, 220, 160, 0.07);
+}
+
+#search-label {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-cream);
+  line-height: 1.3;
+}
+
+#search-page .search-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  padding: 10px 8px 10px 16px;
+  gap: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+#search-page .search-bar:focus-within {
+  border-color: rgba(168, 216, 96, 0.4);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+#search-page .search-bar .search-icon {
+  stroke: #95B46A;
+  opacity: 0.7;
+  flex-shrink: 0;
+  width: 35px;
+  height: 35px;
+}
+
+#search-page .search-bar .search-input {
+  flex: 1;
   border: none;
-  border-radius: 8px;
-  padding: 5px;
+  background: transparent;
+  font-size: 20px;
+  color: var(--text-cream);
+  outline: none;
+  font-family: inherit;
 }
 
-#submit-button{
-    padding: 5px;
-    background: darkkhaki;
-    border: none;
-    border-radius: 8px;
+#search-page .search-bar .search-input::placeholder { color: rgba(200, 220, 160, 0.3); }
+
+#search-page .search-submit-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  color: rgba(149, 180, 106, 0.4);
+  pointer-events: none;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+#search-page .search-submit-btn.active {
+  background: var(--accent);
+  color: var(--bg-base);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#search-page .search-submit-btn.active:hover { transform: scale(1.07); filter: brightness(1.1); }
+#search-page .search-submit-btn.active:active { transform: scale(0.94); }
+
+/* ── RESULTS ── */
+#search-results {
+  flex: 1;
+  padding: 10px 14px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#search-page .plant-result {
+  border-radius: 14px;
+  display: flex;
+  align-items: flex-end;
+  min-height: 140px;
+  padding: 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s;
+}
+
+#search-page .plant-result::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 26, 10, 0.7);
+  z-index: 1;
+  transition: background 0.3s;
+}
+
+#search-page .plant-result:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.5); }
+#search-page .plant-result:hover::before { background: rgba(17, 26, 10, 0.55); }
+
+#search-page .plant-info {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#search-page .plant-name {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-cream);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+
+#search-page .plant-latin {
+  font-size: 13px;
+  color: #c8dca0;
+  opacity: 0.85;
+  font-style: italic;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+#search-page .fav-btn {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-cream);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 10px;
+}
+
+#search-page .fav-btn.active {
+  background: rgba(149, 180, 106, 0.3);
+  border-color: rgba(149, 180, 106, 0.5);
+}
+
+#search-page .fav-btn:hover {
+  transform: scale(1.1);
+}
+
+#search-page .fav-btn:hover { transform: scale(1.1); }
+#search-page .fav-btn.active { color: #e05252; }
+
+/* ── NO RESULTS ── */
+#no-results-mascot {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+  padding: 40px 20px;
+}
+
+#no-results-mascot.visible { display: flex; }
+#mascot-no-results { width: 100px; height: 100px; }
+
+#speech-no-results {
+  background: var(--bg-card);
+  border: 1px solid rgba(168, 216, 96, 0.1);
+  border-radius: 16px 16px 4px 16px;
+  padding: 14px 22px;
+  font-size: 15px;
+  color: var(--text-cream);
+  text-align: center;
+}
+
+/* ── FOOTER ── */
+#search-footer { text-align: center; padding: 20px 20px 30px; }
+#search-footer small { color: rgba(200, 220, 160, 0.2); font-size: 11px; }
+#search-footer a { color: rgba(168, 216, 96, 0.45); }
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; }
 }

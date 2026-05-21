@@ -4,61 +4,56 @@ let CONTEXT = null;
 
 document.addEventListener("DOMContentLoaded", function () {
   const SHUTTER = document.getElementById("shutterBtn");
-
   SHUTTER.addEventListener("click", (event) => {
     event.preventDefault();
     takePicture();
   });
-
   accessCamera();
 });
 
 async function accessCamera() {
-    CANVAS = document.getElementById("camCanvas");
-    CONTEXT = CANVAS.getContext("2d");
+  CANVAS = document.getElementById("camCanvas");
+  CONTEXT = CANVAS.getContext("2d");
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert(
+      "Camera API is not supported. Ensure you browser is compatible, your connection is secure, and the app is given Camera access.",
+    );
+    return;
+  }
+  // Set canvas to a reasonable size
+  CANVAS.width = window.innerWidth;
+  CANVAS.height = window.innerHeight;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+    });
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Camera API is not supported. Ensure you browser is compatible, your connection is secure, and the app is given Camera access.");
-        return; 
-    }
+    VIDEO = document.createElement("video");
 
-    // Set canvas to a reasonable size
-    CANVAS.width = window.innerWidth;
-    CANVAS.height = window.innerHeight;
+    // 1. MUST set playsinline in JS
+    VIDEO.playsInline = true;
+    VIDEO.muted = true;
+    VIDEO.autoplay = true;
 
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment" } 
-        });
-        
-        VIDEO = document.createElement("video");
-        
-        // 1. MUST set playsinline in JS
-        VIDEO.playsInline = true; 
-        VIDEO.muted = true;
-        VIDEO.autoplay = true;
-        
-        // 2. Hide the video, but give it a size so mobile can process it
-        VIDEO.style.position = "absolute";
-        VIDEO.style.opacity = "0";
-        VIDEO.style.pointerEvents = "none";
-        VIDEO.style.width = "100px";
-        VIDEO.style.height = "100px";
-        VIDEO.style.top = "-9999px"; // Move off-screen instead of tiny
+    // 2. Hide the video, but give it a size so mobile can process it
+    VIDEO.style.position = "absolute";
+    VIDEO.style.opacity = "0";
+    VIDEO.style.pointerEvents = "none";
+    VIDEO.style.width = "100px";
+    VIDEO.style.height = "100px";
+    VIDEO.style.top = "-9999px"; // Move off-screen instead of tiny
+    document.body.appendChild(VIDEO);
+    VIDEO.srcObject = stream;
 
-        document.body.appendChild(VIDEO);
-        VIDEO.srcObject = stream;
-        
-        // Use loadedmetadata for a more robust start
-        VIDEO.onloadedmetadata = function () {
-            VIDEO.play();
-            updateCanvas();
-        };
-    } catch (err) {
-        alert("Camera error: " + err);
-    }
+    // Use loadedmetadata for a more robust start
+    VIDEO.onloadedmetadata = function () {
+      VIDEO.play();
+      updateCanvas();
+    };
+  } catch (err) {
+    alert("Camera error: " + err);
+  }
 }
-
 
 function updateCanvas() {
   CONTEXT.drawImage(VIDEO, 0, 0, CANVAS.width, CANVAS.height);
@@ -89,11 +84,28 @@ async function sendToPlantNet(imageBlob) {
       method: "POST",
       body: formData,
     });
-
     const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Identification failed");
 
-    if (!response.ok) {
-      throw new Error(data.error || "Identification failed");
+    // -----------------------------
+    // 🌿 DISEASE CHECK
+    // -----------------------------
+    // Send image + plant name to disease endpoint
+    // PlantNet checks image, Groq names the disease
+    let diseaseData = { diseaseFound: false };
+    try {
+      const diseaseFormData = new FormData();
+      diseaseFormData.append("image", imageBlob, "plant.jpg");
+      diseaseFormData.append("plantName", data.commonName);
+      diseaseFormData.append("latinName", data.scientificName);
+
+      const diseaseResponse = await fetch("/api/identify-disease", {
+        method: "POST",
+        body: diseaseFormData,
+      });
+      diseaseData = await diseaseResponse.json();
+    } catch (diseaseErr) {
+      console.log("[CAMERA] Disease check failed:", diseaseErr);
     }
 
     const params = new URLSearchParams({
@@ -101,6 +113,12 @@ async function sendToPlantNet(imageBlob) {
       latin: data.scientificName,
       score: data.score,
     });
+
+    // Add disease to URL only if found
+    if (diseaseData.diseaseFound) {
+      params.append("disease", diseaseData.diseaseName);
+      params.append("diseaseWarning", diseaseData.shortWarning || "");
+    }
 
     window.location.href = `/plant?${params}`;
   } catch (err) {

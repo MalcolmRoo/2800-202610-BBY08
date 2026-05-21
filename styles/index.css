@@ -1,17 +1,15 @@
-:root { --olive-dark: #3E5622; --sage: #709255; --sage-light: #95B46A; --bg-index: #688048; }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --olive-dark: #517B2C; --sage: #90C447; --sage-light: #BCDA70; --bg-index: #1A2912; }
 
 body.index-page { background: var(--bg-index); }
 
-h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
+h1 { margin-bottom: 8px; color: #C7DD9F; font-size: 48px; text-align: center; }
 
 .app-desc { font-size: 18px; color: var(--sage-light); margin-bottom: 30px; }
 
-.app-logo { display: flex; justify-content: center; margin-top: -60px; margin-bottom: 20px; }
+.app-logo { display: flex; justify-content: center; margin-top: 60px; margin-bottom: 20px; }
 
 .logo-icon {
-  width: 120px; height: 120px; background: #3E5622; border-radius: 28px;
+  width: 120px; height: 120px; background: #517B2C; border-radius: 28px;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 12px rgba(0,0,0,.15); overflow: hidden;
 }
@@ -23,6 +21,11 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 .settings {
   position: absolute; z-index: 20; top: 20px; right: 20px;
+  text-decoration: none; font-size: 28px; color: var(--olive-dark); opacity: 0.7;
+}
+
+.login {
+  position: absolute; z-index: 20; top: 20px; right: 75px;
   text-decoration: none; font-size: 28px; color: var(--olive-dark); opacity: 0.7;
 }
 
@@ -312,14 +315,34 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 .search-bar {
   display: flex; align-items: center; background: #506631; border-radius: 28px;
   padding: 12px 16px 12px 20px; gap: 12px; width: 100%; max-width: 400px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); margin: 10px 0;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); margin: 10px 0 30px 0;
 }
 
-.search-bar .search-input { flex: 1; border: none; background: transparent; font-size: 18px; color: #f0f0f0; outline: none; font-family: inherit; }
+.search-bar .search-input { flex: 1; border: none; background: transparent; font-size: 21px; color: #f0f0f0; outline: none; font-family: inherit; }
 
 .search-bar .search-input::placeholder { color: #95B46A; opacity: 0.7; }
 
-.search-bar .search-icon { stroke: #95B46A; opacity: 0.8; flex-shrink: 0; width: 22px; height: 22px; }
+.search-bar .search-icon { stroke: #95B46A; opacity: 0.8; flex-shrink: 0; width: 35px; height: 35px; padding-top: 5px;}
+
+/* hide white bar*/
+.search-input {
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+/*hide white bar from chrome autofill*/
+.search-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    transition: background-color 9999s ease-in-out 0s;
+    -webkit-text-fill-color: white;
+    font-family: inherit;
+}
 
 .search-submit-btn {
   background: rgba(255, 255, 255, 0.05); border: none; border-radius: 50%;
@@ -331,9 +354,11 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 
 .search-submit-btn.active:hover { transform: translateX(3px); filter: brightness(1.1); }
 
-.footer { position: absolute; bottom: 1rem; }
+.footer { position: absolute; bottom: 1rem; text-align: center; }
 
-.footer a { color: inherit; }
+.footer small { color: #90C447; opacity: 0.7; }
+
+.footer a { color: #BCDA70; text-decoration: underline; }
 
 #permapeople:hover, #plantnet:hover { color: chartreuse; }
 
@@ -348,3 +373,27 @@ h1 { margin-bottom: 8px; color: #172815; font-size: 48px; text-align: center; }
 #favourites-card .card-icon { stroke: #3E5622; display: block; margin-bottom: 4px; }
 
 #favourites-card b, #favourites-card small { font-size: 14px; }
+
+/*for animation of mushroom being clicked*/
+#mascotShakeWrap {
+    position: absolute;
+    display: inline-block;
+    transform-origin: center center;
+}
+
+@keyframes mushroomShake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-4px) skewX(-3deg); }
+    40% { transform: translateX(4px) skewX(3deg); }
+    60% { transform: translateX(-4px) skewX(-3deg); }
+    80% { transform: translateX(4px) skewX(3deg); }
+    100% { transform: translateX(0); }
+}
+
+.mushroom-shake {
+    animation: mushroomShake 0.35s ease;
+}
+
+#mascotImg.angry {
+    filter: sepia(1) saturate(8) hue-rotate(-60deg) brightness(0.9) drop-shadow(0 0 8px red);
+}

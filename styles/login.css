@@ -1,0 +1,101 @@
+
+
+/* Main Auth Layout Wrapper*/
+body {
+  background-color: #688048; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Auth Card Container */
+.accountForms {
+  background-color: #3e5622; 
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Styled Input Fields */
+form input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px; 
+  padding-left: 12px;
+  padding-top: 3px;
+  font-size: 1rem;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* Input Placeholder Text Styling */
+form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Input Focus State */
+form input:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #95b46a; 
+  box-shadow: 0 0 0 3px rgba(149, 180, 106, 0.25);
+}
+
+/* Primary "Login" Action Button */
+form button[type="submit"] {
+  background-color: #95b46a; 
+  color: #3e5622; 
+  border: none;
+  border-radius: 50ch; 
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+form button[type="submit"]:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+form button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/*Helper Text styling */
+body > p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin: 16px 0 8px 0;
+  text-align: center;
+}
+
+/* Secondary "Sign up" Toggle Button*/
+body > button {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 12rem;
+  border-radius: 50ch;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+body > button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.8);
+}

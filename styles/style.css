@@ -16,10 +16,9 @@
 /* Favorites page styles */
 @import url('favorites.css');
 
-/*warning overlay*/
 @import url('warning.css');
-
-@import url('favorites.css');
 
 /* Chat page styles */
 @import url("chat.css");
+
+@import url("login.css");
