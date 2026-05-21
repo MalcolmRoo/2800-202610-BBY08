@@ -140,18 +140,7 @@ function displayPlant(data) {
   const edibleUses = getField(d, "Edible uses");
   console.log("Edible raw value:", edibleRaw);
 
-   // 🔥 EDIBLE‑ONLY MODE FILTER
-  const edibleOnly = JSON.parse(localStorage.getItem("edibleOnly")) || false;
-
-  if (edibleOnly && !isEdible) {
-    document.getElementById("plant-details").innerHTML = `
-    <div class="info-card hazard">
-      <h2>Filtered Out</h2>
-      <p>This plant is toxic and has been removed because Edible‑Only Mode is ON.</p>
-    </div>
-  `;
-    return;
-  }
+  
 
   const isEdibleFlag =
     edibleRaw?.toLowerCase() === "true" ||
@@ -170,6 +159,19 @@ function displayPlant(data) {
   const edibleEl = document.getElementById("stat-edible");
   const plantIcon = document.getElementById("plant-icon");
   const plantLabel = document.getElementById("plant-label");
+
+   // 🔥 EDIBLE‑ONLY MODE FILTER
+  const edibleOnly = JSON.parse(localStorage.getItem("edibleOnly")) || false;
+
+  if (edibleOnly && !isEdible) {
+    document.getElementById("plant-details").innerHTML = `
+    <div class="info-card hazard">
+      <h2>Filtered Out</h2>
+      <p>This plant is toxic and has been removed because Edible‑Only Mode is ON.</p>
+    </div>
+  `;
+    return;
+  }
 
   if (isEdible) {
     statusEl.textContent = "Safe";
@@ -216,12 +218,12 @@ function displayPlant(data) {
   const toxicity = getField(d, "Toxicity");
   let hazardContent = "";
   if (warning && !isLocal) hazardContent += `<p><strong>Warning:</strong> ${warning}</p>`;
-  if(warning && isLocal && localData.Warnings != "") //Local Database
+  if(isLocal && localData.Warnings != "") //Local Database
     hazardContent += `<p><strong>Warning:</strong> ${warning}. ${localData.Warnings}</p>`;
   if (toxicity)
     hazardContent += `<p><strong>Toxicity:</strong> ${toxicity}</p>`;
-  
-  addSection("Known Hazards", hazardContent || null, true); // isHazard = true
+
+  addSection("Known Hazards", hazardContent || null); // isHazard = true
 
   let extraNotes = "";
   if(isLocal && localData.Notes != "")
