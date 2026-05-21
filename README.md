@@ -101,6 +101,6 @@ This project is available under the [Creative Commons Attribution-ShareAlike 4.0
 ## The Team
 - Malcolm Roosdahl : mroosdahl@my.bcit.ca
 - Zach Mosdell : zmosdell@my.bcit.ca
-- Veerpartap Singh Kahlon :
-- Shaan Puar : 
-- Xi Yao : 
+- Veerpartap Singh Kahlon : Vkahlon4@my.bcit.ca
+- Shaan Puar : Spuar2@my.bcit.ca
+- Xi Yao : xyao23@my.bcit.ca
