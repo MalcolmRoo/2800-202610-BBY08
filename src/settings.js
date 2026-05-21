@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       valueDisplay.textContent = value;
     });
   }
-
+  
   // EDIBLE‑ONLY MODE
   const edibleToggle = document.getElementById("edibleOnlyToggle");
   if (edibleToggle) {
