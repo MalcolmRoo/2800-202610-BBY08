@@ -5,7 +5,7 @@ async function sharePlant(e) {
   // 3. Remembers exactly which button was clicked so the code knows where to display the "Copied!" message later.
   const btn = e.currentTarget;
   const common = el('common-name') || 'Unknown Plant';
-  
+
   // 2. Takes those pieces and joins them into a clean sentence.
   const text = [
     `${common}${el('latin-name') ? ` (${el('latin-name')})` : ''}`,
@@ -25,7 +25,7 @@ async function sharePlant(e) {
     // 6. If sharing fails, it saves the text to your clipboard instead.
     if (err.name === 'AbortError') return; // Don't do anything if the user just hit 'Cancel'.
     navigator.clipboard.writeText(text).then(() => {
-      
+
       // 7. Swaps the button text to "Copied!" for 2 seconds to show it worked.
       const old = btn.innerHTML;
       btn.innerText = 'Copied!';

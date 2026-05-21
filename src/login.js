@@ -4,7 +4,7 @@ var signUpForm = document.getElementById('signUpForm');
 var message = document.getElementById('message');
 
 modeChange.addEventListener('click', () => {
-    if(loginForm.style.display === "none"){
+    if (loginForm.style.display === "none") {
         loginForm.style.display = "block";
         signUpForm.style.display = "none";
         modeChange.textContent = "Sign up";
