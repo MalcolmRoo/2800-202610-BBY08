@@ -246,3 +246,16 @@ body {
   transform: translateX(3px);
   filter: brightness(1.1);
 }
+/* --- BRIGHTER AI BUBBLE --- */
+.chat-bubble.ai {
+  background: #bbf898; /* brighter than #2d4a1a */
+  color: #323232; /* soft bright cream */
+  border: 1px solid rgba(180, 255, 156, 0.35);
+}
+
+/* --- BRIGHTER USER BUBBLE --- */
+.chat-bubble.user {
+  background: #dff7cc; /* brighter sage */
+  color: #232323; /* dark readable text */
+  font-weight: 600;
+}

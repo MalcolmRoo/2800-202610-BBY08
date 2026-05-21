@@ -288,3 +288,62 @@ body.large-text {
 .color-blind {
   filter: grayscale(100%) !important;
 }
+
+body.dark-mode h1.app-title {
+  color: #b4ff9c !important;
+}
+
+.dark-mode #fav-hero p {
+  color: #b4ff9c;
+}
+.dark-mode #back-btn svg {
+  stroke: var(--text);
+}
+
+.dark-mode #fav-page {
+  background: #0b0b0b; /* deeper black */
+  color: var(--text);
+}
+
+/* ⭐ Brightened card for dark mode */
+.dark .fav-card,
+.dark .fav-card-name {
+  background: #dfffb5;
+
+  color: #262525;
+
+  transition: background 0.25s ease;
+}
+
+.dark .fav-card-latin {
+  color: #3a3a3a; /* slightly lighter than name */
+}
+
+.dark .fav-tag {
+  background: #c8f59c;
+  color: #1a1a1a;
+  border: 1px solid #9f9f9f;
+}
+
+/* ⭐ Slight hover lift */
+.dark .fav-card:hover,
+.dark .card:hover {
+  background: #aafa5f;
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
+}
+
+.dark body {
+  background: #050505 !important;
+  padding: 0 !important;
+}
+
+.dark .bokeh-bg,
+.dark .watermark {
+  display: none !important;
+}
+
+.dark #fav-page {
+  background: #000 !important;
+  width: 100%;
+  min-height: 100vh;
+}

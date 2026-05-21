@@ -125,3 +125,5 @@ body.dark .logo-icon {
 .toggle input:checked + .slider::before {
   transform: translateX(21px);
 }
+
+/* Light mode background for settings page */

@@ -87,7 +87,7 @@
     </div>
   </div>
   </div>
-  <h1>GreenScan</h1>
+  <h1 class="app-title">GreenScan</h1>
   <p id="sub-message" class="app-desc">Identify any plant instantly</p>
   <div class="cards">
     <div class="card-1">
@@ -171,6 +171,11 @@
   <script src="/tutorial.js"></script>
   <script src="/identify.js"></script>
   <script src="/index.js"></script>
+  <script>
+  const dark = JSON.parse(localStorage.getItem("darkMode"));
+  if (dark) document.body.classList.add("dark-mode");
+</script>
+
 </body>
 
 </html>
