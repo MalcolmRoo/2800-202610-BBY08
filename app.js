@@ -1,4 +1,5 @@
-require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
+// Commented out custom DNS overrides to prevent issues in hosted/cloud environments
+// require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 
 require("dotenv").config();
 const express = require("express");
@@ -223,7 +224,7 @@ app.post("/api/identify-disease", upload.single("image"), async (req, res) => {
     );
 
     const groqData = await groqResponse.json();
-    const raw = groqData.choices[0]?.message?.content || "{}";
+    const raw = groqData.choices?.[0]?.message?.content || "{}";
     const clean = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
 
@@ -252,8 +253,6 @@ app.post("/api/permapeople/search", async (req, res) => {
         "x-permapeople-key-id": process.env.PERMA_KEY_ID,
         "x-permapeople-key-secret": process.env.PERMA_KEY_SECRET,
         "Content-Type": "application/json",
-        "x-permapeople-key-id": process.env.PERMA_KEY_ID, // auth key
-        "x-permapeople-key-secret": process.env.PERMA_KEY_SECRET, // auth secret
       },
       body: JSON.stringify({ q }),
     });
@@ -287,7 +286,6 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
 
     const raw = await response.text();
 
-    // Parse JSON response safely
     try {
       const data = JSON.parse(raw);
 
@@ -323,25 +321,29 @@ app.get("/api/permapeople/plants/:id", async (req, res) => {
 app.post("/api/chat", async (req, res) => {
   try {
     const { plantName, latinName, question, disease } = req.body;
+
     // Validate inputs
     if (!question || !plantName) {
       return res.status(400).json({ error: "Missing plant name or question" });
     }
 
     const groqApiKey = process.env.GROQ_API_KEY;
+    if (!groqApiKey) {
+      console.error("[CHAT] Missing GROQ_API_KEY environment variable");
+      return res
+        .status(500)
+        .json({ error: "Server misconfiguration: missing GROQ_API_KEY." });
+    }
 
     // Build system prompt with plant context
-    // This tells the AI exactly what plant the user is asking about
-    // and restricts it to only answer plant-related questions
     const systemPrompt = `You are a helpful plant assistant for GreenScan, an urban foraging app. 
 The user has just identified a plant: ${plantName} (${latinName}).
 ${disease ? `Important: This plant may be affected by ${disease}. Be ready to answer questions about this disease.` : ""}
 Your job is to answer questions about this specific plant only.
 Topics you can help with: edibility, preparation methods, safety, foraging tips, medicinal uses, habitat.
 If asked anything unrelated to this plant or foraging, politely redirect the conversation back to the plant.
-Keep answers concise, clear and beginner-friendly. Make sure that the answers and straight to the point no useless info, Also try to lay out answers in easy to read bullet points if possible.
-try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.
- `;
+Keep answers concise, clear and beginner-friendly. Make sure that the answers are straight to the point with no useless info. Also try to lay out answers in easy to read bullet points if possible.
+Try to give short and concise answers, if the answer is too long try to summarize it in a few sentences. If you don't know the answer, say you don't know instead of making something up.`;
 
     // Call Groq API
     const response = await fetch(
@@ -358,7 +360,7 @@ try to give short and concise answers, if the answer is too long try to summariz
             { role: "system", content: systemPrompt },
             { role: "user", content: question },
           ],
-          max_tokens: 300, // keep answers short and mobile friendly
+          max_tokens: 300,
           temperature: 0.7,
         }),
       },
@@ -366,7 +368,7 @@ try to give short and concise answers, if the answer is too long try to summariz
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("[CHAT] Groq error:", errorText);
+      console.error("[CHAT] Groq HTTP error:", response.status, errorText);
       return res
         .status(500)
         .json({ error: "AI service unavailable. Try again." });
@@ -374,15 +376,15 @@ try to give short and concise answers, if the answer is too long try to summariz
 
     const data = await response.json();
     const answer =
-      data.choices[0]?.message?.content || "Sorry I could not answer that.";
+      data.choices?.[0]?.message?.content || "Sorry, I could not answer that.";
 
     console.log("[CHAT] Question:", question);
     console.log("[CHAT] Answer:", answer.substring(0, 100) + "...");
 
-    res.json({ answer });
+    return res.json({ answer });
   } catch (err) {
     console.error("[CHAT] ERROR:", err.message);
-    res.status(500).json({ error: "Server error: " + err.message });
+    return res.status(500).json({ error: "Server error: " + err.message });
   }
 });
 
@@ -417,18 +419,19 @@ app.post("/loginSubmit", async (req, res) => {
     return;
   }
 
-  const result = await userCollection.find({ email: email }).project(
-    {
+  const result = await userCollection
+    .find({ email: email })
+    .project({
       username: 1,
       email: 1,
       password: 1,
       favorites: 1,
       settings: 1,
-      _id: 1
-    }).toArray();
+      _id: 1,
+    })
+    .toArray();
 
   if (result.length != 1) {
-    //what to do if no user found
     console.log("no user found");
     return;
   }
@@ -441,7 +444,6 @@ app.post("/loginSubmit", async (req, res) => {
     res.redirect("/");
     return;
   } else {
-    // what to do if pass is wrong
     console.log("pass is wrong");
     return;
   }
@@ -492,7 +494,6 @@ app.get("/logout", (req, res) => {
 
 //check login status
 app.get("/api/auth-status", (req, res) => {
-  // Checks if a session exists and has a username attached
   if (req.session && req.session.username) {
     return res.json({ loggedIn: true, username: req.session.username });
   }
@@ -502,7 +503,6 @@ app.get("/api/auth-status", (req, res) => {
 // Fetch all favorites for a user from MongoDB
 app.get("/user/favorites", async (req, res) => {
   try {
-    // Note: If you implement login sessions later, replace 'guest_user' with req.session.user_id
     const userId = req.session.username;
 
     const user = await userCollection.findOne({ username: userId });
@@ -530,11 +530,10 @@ app.post("/user/favorites", express.json(), async (req, res) => {
 
     const newFavorite = { id, commonName, latinName, savedAt, imageUrl };
 
-    // Update the document by pushing the new favorite into the array if it doesn't already exist
     await userCollection.updateOne(
       { username: userId },
       { $addToSet: { favorites: newFavorite } },
-      { upsert: true }, // Creates the user document if it doesn't exist yet
+      { upsert: true },
     );
 
     res
@@ -556,7 +555,6 @@ app.delete("/user/favorites/:id", async (req, res) => {
       return res.status(400).json({ error: "Missing plant id parameter" });
     }
 
-    // Pull the item matching the unique plant ID out of the favorites array
     await userCollection.updateOne(
       { username: userId },
       { $pull: { favorites: { id: plantId } } },
@@ -574,7 +572,7 @@ app.delete("/user/favorites/:id", async (req, res) => {
 //Fetch a user's cloud configurations
 app.get("/user/settings", async (req, res) => {
   try {
-    const username = req.session.username || "guest_user"; // Hook into active account
+    const username = req.session.username || "guest_user";
     const user = await userCollection.findOne({ username: username });
 
     if (!user || !user.settings) {
@@ -597,7 +595,6 @@ app.post("/user/settings", express.json(), async (req, res) => {
       return res.status(400).json({ error: "Missing setting key" });
     }
 
-    // Uses dot-notation to dynamically target and update exactly one setting key pair
     await userCollection.updateOne(
       { $set: { [`settings.${key}`]: value } },
       { upsert: true },
